@@ -79,7 +79,7 @@ namespace custom
         queue& operator = (const queue<T>& rhs) throw(const char*);
 
         // getters
-        int size() const { return numPush - numPop; }
+        int size() const { return getPush() - getPop(); }
         int capacity() const { return numCapacity; }
         int getPop() const { return numPop; }
         int getPush() const { return numPush; }
@@ -187,7 +187,8 @@ namespace custom
             resize(capacity() * 2);
         }
         setPush(numPush++);
-        data[++iTail()] = t;
+        int tail = iTail();
+        data[++tail] = t;
         //std::cout << "Num: " << size() << endl;
     };
 
@@ -227,13 +228,20 @@ namespace custom
             delete[] data;
         }
         data = NULL;
-        numPush = 0;
-        numPop = 0;
-        numCapacity = 0;
+        // numPush = 0;
+        // numPop = 0;
+        setCapacity(0);
+        // initialize all member variables
+        setPush(0);
+        setPop(0);
+
         if (rhs.numCapacity == 0)
         {
             return *this;
         }
+        else if (capacity() < rhs.size())
+            resize(rhs.size());
+
         try
         {
             data = new T[rhs.numCapacity];
@@ -242,10 +250,10 @@ namespace custom
         {
             throw "Bad allocation";
         }
-        numCapacity = rhs.numCapacity;
+        //numCapacity = rhs.numCapacity;
         //num = rhs.num;
-        for (int i = 0; i < numCapacity; i++)
-            data[i] = rhs.data[i];
+        for (int i = rhs.getPop(); i < rhs.getPush(); i++)
+            push(rhs.data[i % rhs.capacity()]);
 
         return *this;
     }
