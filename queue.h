@@ -55,7 +55,7 @@ namespace custom
         }
      queue(int cap);
      queue(const queue& rhs);
-         queue()
+         ~queue()
         {
             if (data != NULL)
             {
