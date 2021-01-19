@@ -4,18 +4,18 @@
  * Summary:
  *    This class contains the notion of an array: a bucket to hold
  *    data for the user. This is just a starting-point for more advanced
- *    constainers such as the stack, set, stack, queue, deque, and map
+ *    constainers such as the queue, set, queue, queue, deque, and map
  *    which we will build later this semester.
  *
  *    This will contain the class definition of:
- *       stack             : similar to std::stack
+ *       queue             : similar to std: queue
  *       array :: iterator : an iterator through the array
  * Author
  *    Br. Helfrich
  ************************************************************************/
 
-#ifndef STACK_H
-#define STACK_H
+#ifndef QUEUE_H
+#define QUEUE_H
 #include <iostream>
 #include <cstddef>
 #include <cassert>  // because I am paranoid
@@ -32,11 +32,11 @@ namespace custom
 {
 
     /************************************************
-    * stack
+    * queue
     * A class that holds stuff
     ***********************************************/
     template <class T>
-    class stack
+    class queue
     {
     private:
         T* data;
@@ -47,22 +47,22 @@ namespace custom
         void setCapacity(int cap) { this->cap = cap; }
 
     public:
-        stack()
+        queue()
         {
             setCapacity(0);
             setSize(0);
             this->data = NULL;
         }
-        stack(int cap);
-        stack(const stack& rhs);
-        ~stack()
+     queue(int cap);
+     queue(const queue& rhs);
+         queue()
         {
             if (data != NULL)
             {
                 delete[] data;
             }
         }
-        stack& operator = (const stack<T>& rhs) throw(const char*);
+     queue& operator = (const queue<T>& rhs) throw(const char*);
         int size() const { return num; }
         int capacity() const { return cap; }
         bool empty() const { return num == 0; }
@@ -74,10 +74,10 @@ namespace custom
     };
     
     /*******************************************
-     * STACK :: RESIZE
+     * queue :: RESIZE
      *******************************************/
     template <class T>
-    void stack <T> ::resize(int newCap) throw(const char*)
+    void queue <T> ::resize(int newCap) throw(const char*)
     {
         //delete[] data;
         T* newData;
@@ -110,12 +110,12 @@ namespace custom
     };
 
     /********************************************
-    * STACK :: Top
+    * queue :: Top
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
     template <class T>
-    T& stack <T> ::top()
+    T& queue <T> ::top()
     {
         if (!empty())
         {
@@ -123,17 +123,17 @@ namespace custom
         }
         else if (empty())
         {
-            throw "ERROR: Unable to reference the element from an empty Stack";
+            throw "ERROR: Unable to reference the element from an empty queue";
         }
     };
 
     /********************************************
-    * STACK :: Top
+    * queue :: Top
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
     template <class T>
-    const T& stack <T> ::top() const
+    const T& queue <T> ::top() const
     {
         if (!empty())
         {
@@ -141,17 +141,17 @@ namespace custom
         }
         else
         {
-            throw "ERROR: Unable to reference the element from an empty Stack\n";
+            throw "ERROR: Unable to reference the element from an empty queue\n";
         }
     };
 
     /********************************************
-    * STACK :: Push
+    * queue :: Push
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
     template <class T>
-    void stack <T> ::push(const T& t)
+    void queue <T> ::push(const T& t)
     {
         if (capacity() == 0)
         {
@@ -166,23 +166,23 @@ namespace custom
     };
 
     /********************************************
-     * STACK :: Clear
+     * queue :: Clear
      * Note that you have to use "typename" before
      * the return value type
      ********************************************/
     template <class T>
-    void stack <T> ::clear()
+    void queue <T> ::clear()
     {
         num = 0;
     };
 
     /********************************************
-     * STACK :: Pop
+     * queue :: Pop
      * Note that you have to use "typename" before
      * the return value type
      ********************************************/
     template <class T>
-    void stack <T> ::pop()
+    void queue <T> ::pop()
     {
         if (!empty())
         {
@@ -191,12 +191,12 @@ namespace custom
     };
 
     /*******************************************
-     * STACK :: Assignment CONSTRUCTOR
+     * queue :: Assignment CONSTRUCTOR
      *******************************************/
     template <class T>
-    stack <T>& stack <T> :: operator = (const stack <T>& rhs) throw(const char*)
+ queue <T>& queue <T> :: operator = (const queue <T>& rhs) throw(const char*)
     {
-        // we can only copy arrays of equal size. stacks are not this way!
+        // we can only copy arrays of equal size. queues are not this way!
         if (data != NULL)
         {
             delete[] data;
@@ -225,10 +225,10 @@ namespace custom
     }
 
     /*******************************************
-     * STACK :: COPY CONSTRUCTOR
+     * queue :: COPY CONSTRUCTOR
      *******************************************/
     template <class T>
-    stack <T> ::stack(const stack <T>& rhs)
+ queue <T> :: queue(const queue <T>& rhs)
     {
         data = NULL;
         num = 0;
@@ -239,11 +239,11 @@ namespace custom
     }
 
     /**********************************************
-     * STACK : NON-DEFAULT CONSTRUCTOR
+     * queue : NON-DEFAULT CONSTRUCTOR
      * Preallocate the array to "capacity"
      **********************************************/
     template <class T>
-    stack <T> ::stack(int cap)
+ queue <T> :: queue(int cap)
     {
         assert(cap >= 0);
 
@@ -273,10 +273,8 @@ namespace custom
         // copy over the stuff
         this->cap = cap;
         this->num = 0;
-
-
     }
 
 };
-#endif // STACK_H
+#endif // queue_H
 
