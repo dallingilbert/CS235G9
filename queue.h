@@ -1,15 +1,14 @@
 /***********************************************************************
  * Header:
- *    Stacl
+ *    Queue
  * Summary:
- *    This class contains the notion of an array: a bucket to hold
+ *    This class contains the notion of a queue: a bucket to hold
  *    data for the user. This is just a starting-point for more advanced
  *    constainers such as the queue, set, queue, queue, deque, and map
  *    which we will build later this semester.
  *
  *    This will contain the class definition of:
- *       queue             : similar to std: queue
- *       array :: iterator : an iterator through the array
+ *       queue             : similar to std::queue
  * Author
  *    Br. Helfrich
  ************************************************************************/
@@ -47,14 +46,17 @@ namespace custom
         void setCapacity(int cap) { this->cap = cap; }
 
     public:
+        // default constructor and non-default constructors
         queue()
         {
             setCapacity(0);
             setSize(0);
             this->data = NULL;
         }
-     queue(int cap);
-     queue(const queue& rhs);
+        queue(int cap);
+        queue(const queue& rhs);
+
+        // destructor
          ~queue()
         {
             if (data != NULL)
@@ -62,7 +64,11 @@ namespace custom
                 delete[] data;
             }
         }
-     queue& operator = (const queue<T>& rhs) throw(const char*);
+        
+        // overloaded operators
+        queue& operator = (const queue<T>& rhs) throw(const char*);
+
+        // member methods 
         int size() const { return num; }
         int capacity() const { return cap; }
         bool empty() const { return num == 0; }
