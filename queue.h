@@ -38,22 +38,32 @@ namespace custom
     class queue
     {
     private:
+        // member variables
         T* data;
-        int num;
-        int cap;
+        int numPush;
+        int numPop;
+        int numCapacity;
+        
+        // setters
+        void setPush(int numPush)         { this->numPush = numPush;         }
+        void setPop(int numPop)           { this->numPop = numPop;           }
+        void setCapacity(int numCapacity) { this->numCapacity = numCapacity; }
+        
+        // private member methods
         void resize(int newCap) throw(const char*);
-        void setSize(int num) { this->num = num; }
-        void setCapacity(int cap) { this->cap = cap; }
+        int iHead() { return (getPush() - 1) % capacity(); }
+        int iTail() { return getPop() % capacity(); }
 
     public:
         // default constructor and non-default constructors
         queue()
         {
             setCapacity(0);
-            setSize(0);
+            setPop(0);
+            setPush(0);
             this->data = NULL;
         }
-        queue(int cap);
+        queue(int numCapacity);
         queue(const queue& rhs);
 
         // destructor
@@ -68,15 +78,24 @@ namespace custom
         // overloaded operators
         queue& operator = (const queue<T>& rhs) throw(const char*);
 
-        // member methods 
-        int size() const { return num; }
-        int capacity() const { return cap; }
-        bool empty() const { return num == 0; }
+        // getters
+        int size() const { return numPush - numPop; }
+        int capacity() const { return numCapacity; }
+        int getPop() const { return numPop; }
+        int getPush() const { return numPush; }
+
+
+         // public member methods 
+        bool empty() const { return size() == 0; }
         void clear();
         void push(const T& t);
         void pop();
         T& top();
         const T& top() const;
+        T& front();
+        const T& front() const;
+        T& back();
+        const T& back() const;
     };
     
     /*******************************************
@@ -108,7 +127,7 @@ namespace custom
 
         if (newCap < capacity())
         {
-            setSize(newCap);
+            setPush(newCap);
         }
 
         setCapacity(newCap);
@@ -167,7 +186,8 @@ namespace custom
         {
             resize(capacity() * 2);
         }
-        data[num++] = t;
+        setPush(numPush++);
+        data[++iTail()] = t;
         //std::cout << "Num: " << size() << endl;
     };
 
@@ -179,7 +199,8 @@ namespace custom
     template <class T>
     void queue <T> ::clear()
     {
-        num = 0;
+        setPush(0);
+        setPop(0);
     };
 
     /********************************************
@@ -191,16 +212,14 @@ namespace custom
     void queue <T> ::pop()
     {
         if (!empty())
-        {
-            num--;
-        }
+            setPop(numPop++);
     };
 
     /*******************************************
      * queue :: Assignment CONSTRUCTOR
      *******************************************/
     template <class T>
- queue <T>& queue <T> :: operator = (const queue <T>& rhs) throw(const char*)
+    queue <T>& queue <T> :: operator = (const queue <T>& rhs) throw(const char*)
     {
         // we can only copy arrays of equal size. queues are not this way!
         if (data != NULL)
@@ -208,23 +227,24 @@ namespace custom
             delete[] data;
         }
         data = NULL;
-        num = 0;
-        cap = 0;
-        if (rhs.cap == 0)
+        numPush = 0;
+        numPop = 0;
+        numCapacity = 0;
+        if (rhs.numCapacity == 0)
         {
             return *this;
         }
         try
         {
-            data = new T[rhs.cap];
+            data = new T[rhs.numCapacity];
         }
         catch (std::bad_alloc)
         {
             throw "Bad allocation";
         }
-        cap = rhs.cap;
-        num = rhs.num;
-        for (int i = 0; i < cap; i++)
+        numCapacity = rhs.numCapacity;
+        //num = rhs.num;
+        for (int i = 0; i < numCapacity; i++)
             data[i] = rhs.data[i];
 
         return *this;
@@ -234,11 +254,12 @@ namespace custom
      * queue :: COPY CONSTRUCTOR
      *******************************************/
     template <class T>
- queue <T> :: queue(const queue <T>& rhs)
+    queue <T> :: queue(const queue <T>& rhs)
     {
         data = NULL;
-        num = 0;
-        cap = 0;
+        numPush = 0;
+        numCapacity = 0;
+        numPop = 0;
 
         *this = rhs;
 
@@ -249,26 +270,27 @@ namespace custom
      * Preallocate the array to "capacity"
      **********************************************/
     template <class T>
- queue <T> :: queue(int cap)
+    queue <T> :: queue(int numCapacity)
     {
-        assert(cap >= 0);
+        assert(numCapacity >= 0);
 
         // do nothing if there is nothing to do.
         // since we can't grow an array, this is kinda pointless
-        if (cap == 0)
+        if (numCapacity == 0)
         {
-            cerr << "cap is 0 -----" << endl;
-            this->num = 0;
-            this->cap = 0;
+            cerr << "numCapacity is 0 -----" << endl;
+            this->numPop = 0;
+            this->numPush = 0;
+            this->numCapacity = 0;
             this->data = NULL;
             return;
         }
 
         // attempt to allocate
-        data = new T[cap];
+        data = new T[numCapacity];
         try
         {
-            data = new T[cap];
+            data = new T[numCapacity];
         }
         catch (std::bad_alloc)
         {
@@ -277,10 +299,40 @@ namespace custom
 
 
         // copy over the stuff
-        this->cap = cap;
-        this->num = 0;
+        //this->numCapacity = numCapacity;
+        setCapacity(numCapacity);
+        setPop(0);
+        setPush(0);
+        //this->num = 0;
     }
 
+    /**********************************************
+     * queue : FRONT
+     * Access the oldest value from the queue by 
+     * reference
+     **********************************************/
+    template <class T>
+    T& queue <T> :: front()
+    {
+        if (empty())
+            throw "ERROR: Unable to allocate queue";
+        else 
+            return data[iHead()];
+    }
+
+    /**********************************************
+     * queue : FRONT
+     * Access the oldest value from the queue by 
+     * const
+     **********************************************/
+    template <class T>
+    const T& queue <T> :: front() const
+    {
+        if (empty())
+            throw "ERROR: Unable to allocate queue";
+        else 
+            return data[iHead()];
+    }
 };
 #endif // queue_H
 
