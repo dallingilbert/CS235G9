@@ -51,8 +51,8 @@ namespace custom
         
         // private member methods
         void resize(int newCap) throw(const char*);
-        int iHead() { return (getPush() - 1) % capacity(); }
-        int iTail() { return getPop() % capacity(); }
+        int iHead() { return ((getPush() - 1) % capacity()); }
+        int iTail() { return (getPop() % capacity()); }
 
     public:
         // default constructor and non-default constructors
@@ -79,7 +79,7 @@ namespace custom
         queue& operator = (const queue<T>& rhs) throw(const char*);
 
         // getters
-        int size() const { return getPush() - getPop(); }
+        int size() const { return (getPush() - getPop()); }
         int capacity() const { return numCapacity; }
         int getPop() const { return numPop; }
         int getPush() const { return numPush; }
@@ -104,7 +104,6 @@ namespace custom
     template <class T>
     void queue <T> ::resize(int newCap) throw(const char*)
     {
-        //delete[] data;
         T* newData;
         try
         {
@@ -186,9 +185,8 @@ namespace custom
         {
             resize(capacity() * 2);
         }
-        setPush(numPush++);
-        int tail = iTail();
-        data[++tail] = t;
+        setPush(getPush() + 1);
+        data[iTail()] = t;
         //std::cout << "Num: " << size() << endl;
     };
 
@@ -213,24 +211,15 @@ namespace custom
     void queue <T> ::pop()
     {
         if (!empty())
-            setPop(numPop++);
+            setPop(getPop() + 1);
     };
 
     /*******************************************
-     * queue :: Assignment CONSTRUCTOR
+     * queue :: Assignment operator
      *******************************************/
     template <class T>
     queue <T>& queue <T> :: operator = (const queue <T>& rhs) throw(const char*)
     {
-        // we can only copy arrays of equal size. queues are not this way!
-        if (data != NULL)
-        {
-            delete[] data;
-        }
-        data = NULL;
-        // numPush = 0;
-        // numPop = 0;
-        setCapacity(0);
         // initialize all member variables
         setPush(0);
         setPop(0);
@@ -241,17 +230,7 @@ namespace custom
         }
         else if (capacity() < rhs.size())
             resize(rhs.size());
-
-        try
-        {
-            data = new T[rhs.numCapacity];
-        }
-        catch (std::bad_alloc)
-        {
-            throw "Bad allocation";
-        }
-        //numCapacity = rhs.numCapacity;
-        //num = rhs.num;
+            
         for (int i = rhs.getPop(); i < rhs.getPush(); i++)
             push(rhs.data[i % rhs.capacity()]);
 
@@ -264,13 +243,12 @@ namespace custom
     template <class T>
     queue <T> :: queue(const queue <T>& rhs)
     {
-        data = NULL;
-        numPush = 0;
-        numCapacity = 0;
-        numPop = 0;
+        this->data = NULL;
+        setPush(0);
+        setCapacity(0);
+        setPop(0);
 
         *this = rhs;
-
     }
 
     /**********************************************
@@ -287,10 +265,7 @@ namespace custom
         if (numCapacity == 0)
         {
             cerr << "numCapacity is 0 -----" << endl;
-            this->numPop = 0;
-            this->numPush = 0;
-            this->numCapacity = 0;
-            this->data = NULL;
+            queue();
             return;
         }
 
@@ -307,11 +282,9 @@ namespace custom
 
 
         // copy over the stuff
-        //this->numCapacity = numCapacity;
         setCapacity(numCapacity);
         setPop(0);
         setPush(0);
-        //this->num = 0;
     }
 
     /**********************************************
