@@ -51,8 +51,8 @@ namespace custom
         
         // private member methods
         void resize(int newCap) throw(const char*);
-        int iHead() { return ((getPush() - 1) % capacity()); }
-        int iTail() { return (getPop() % capacity()); }
+        int iHead() { return (getPop() % capacity()); }
+        int iTail() { return ((getPush() - 1) % capacity()); }
 
     public:
         // default constructor and non-default constructors
