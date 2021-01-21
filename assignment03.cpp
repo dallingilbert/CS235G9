@@ -242,6 +242,7 @@ void testCircular()
             case '*':
                cout << "Size:     " << q.size()                   << endl;
                cout << "Empty?    " << (q.empty() ? "Yes" : "No") << endl;
+               //cout << "Capacity: " << q.capacity()               << endl;
                break;
             case '!':
                break;

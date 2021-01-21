@@ -124,11 +124,6 @@ namespace custom
 
         data = newData;
 
-        if (newCap < capacity())
-        {
-            setPush(newCap);
-        }
-
         setCapacity(newCap);
 
     };
@@ -212,6 +207,8 @@ namespace custom
     {
         if (!empty())
             setPop(getPop() + 1);
+        else
+            return;
     };
 
     /*******************************************
