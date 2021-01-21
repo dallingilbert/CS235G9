@@ -314,6 +314,34 @@ namespace custom
         else 
             return data[iHead()];
     }
+
+        /**********************************************
+     * queue : BACK
+     * Access the oldest value from the queue by 
+     * reference
+     **********************************************/
+    template <class T>
+    T& queue <T> :: back()
+    {
+        if (empty())
+            throw "ERROR: Unable to allocate queue";
+        else 
+            return data[iTail()];
+    }
+
+    /**********************************************
+     * queue : BACK
+     * Access the oldest value from the queue by 
+     * const
+     **********************************************/
+    template <class T>
+    const T& queue <T> :: back() const
+    {
+        if (empty())
+            throw "ERROR: Unable to allocate queue";
+        else 
+            return data[iTail()];
+    }
 };
 #endif // queue_H
 
