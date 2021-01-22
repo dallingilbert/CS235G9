@@ -37,7 +37,7 @@ void testErrors();
 // TEST1.  Then, when TEST1 works, try TEST2 and so on.
 #define TEST1   // for testSimple()
 #define TEST2   // for testPushPopTop()
-//#define TEST3   // for testCircular()
+#define TEST3   // for testCircular()
 //#define TEST4   // for testErrors()
 
 /**********************************************************************
@@ -242,6 +242,7 @@ void testCircular()
             case '*':
                cout << "Size:     " << q.size()                   << endl;
                cout << "Empty?    " << (q.empty() ? "Yes" : "No") << endl;
+               //cout << "Capacity: " << q.capacity()               << endl;
                break;
             case '!':
                break;
