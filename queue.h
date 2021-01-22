@@ -19,7 +19,7 @@
 #include <cstddef>
 #include <cassert>  // because I am paranoid
 
-// a little helper macro to write debug code
+ // a little helper macro to write debug code
 #ifdef NDEBUG
 #define Debug(statement)
 #else
@@ -43,16 +43,16 @@ namespace custom
         int numPush;
         int numPop;
         int numCapacity;
-        
+
         // setters
-        void setPush(int numPush)         { this->numPush = numPush;         }
-        void setPop(int numPop)           { this->numPop = numPop;           }
+        void setPush(int numPush) { this->numPush = numPush; }
+        void setPop(int numPop) { this->numPop = numPop; }
         void setCapacity(int numCapacity) { this->numCapacity = numCapacity; }
-        
+
         // private member methods
         void resize(int newCap) throw(const char*);
-        int iHead() { return ((getPush() - 1) % capacity()); }
-        int iTail() { return (getPop() % capacity()); }
+        int iHead() { return (getPop() % capacity()); }
+        int iTail() { return ((getPush() - 1) % capacity()); }
 
     public:
         // default constructor and non-default constructors
@@ -67,14 +67,14 @@ namespace custom
         queue(const queue& rhs);
 
         // destructor
-         ~queue()
+        ~queue()
         {
             if (data != NULL)
             {
                 delete[] data;
             }
         }
-        
+
         // overloaded operators
         queue& operator = (const queue<T>& rhs) throw(const char*);
 
@@ -85,7 +85,7 @@ namespace custom
         int getPush() const { return numPush; }
 
 
-         // public member methods 
+        // public member methods 
         bool empty() const { return size() == 0; }
         void clear();
         void push(const T& t);
@@ -97,7 +97,7 @@ namespace custom
         T& back();
         const T& back() const;
     };
-    
+
     /*******************************************
      * queue :: RESIZE
      *******************************************/
@@ -114,9 +114,12 @@ namespace custom
             throw "Bad allocation";
         }
 
-        for (int i = 0; i < capacity() && i < newCap; i++)
-            newData[i] = data[i];
+        int newPush = 0;
+        for (int i = numPop; i < numPush; i++)
+            newData[newPush++] = data[i % numCapacity];
 
+        //numPush = newPush;
+        
         if (data != NULL)
         {
             delete[] data;
@@ -126,6 +129,7 @@ namespace custom
 
         if (newCap < capacity())
         {
+            numPop = 0;
             setPush(newCap);
         }
 
@@ -224,13 +228,19 @@ namespace custom
         setPush(0);
         setPop(0);
 
+        if (data != NULL)
+        {
+            delete[] data;
+            data = NULL;
+        }
+
         if (rhs.numCapacity == 0)
         {
             return *this;
         }
-        else if (capacity() < rhs.size())
-            resize(rhs.size());
-            
+        else
+            resize(rhs.capacity());
+
         for (int i = rhs.getPop(); i < rhs.getPush(); i++)
             push(rhs.data[i % rhs.capacity()]);
 
@@ -241,7 +251,7 @@ namespace custom
      * queue :: COPY CONSTRUCTOR
      *******************************************/
     template <class T>
-    queue <T> :: queue(const queue <T>& rhs)
+    queue <T> ::queue(const queue <T>& rhs)
     {
         this->data = NULL;
         setPush(0);
@@ -256,7 +266,7 @@ namespace custom
      * Preallocate the array to "capacity"
      **********************************************/
     template <class T>
-    queue <T> :: queue(int numCapacity)
+    queue <T> ::queue(int numCapacity)
     {
         assert(numCapacity >= 0);
 
@@ -289,31 +299,58 @@ namespace custom
 
     /**********************************************
      * queue : FRONT
-     * Access the oldest value from the queue by 
+     * Access the oldest value from the queue by
      * reference
      **********************************************/
     template <class T>
-    T& queue <T> :: front()
+    T& queue <T> ::front()
     {
         if (empty())
-            throw "ERROR: Unable to allocate queue";
-        else 
+            throw "ERROR: attempting to access an element in an empty queue";
+        else
             return data[iHead()];
     }
 
     /**********************************************
      * queue : FRONT
-     * Access the oldest value from the queue by 
+     * Access the oldest value from the queue by
      * const
      **********************************************/
     template <class T>
-    const T& queue <T> :: front() const
+    const T& queue <T> ::front() const
     {
         if (empty())
-            throw "ERROR: Unable to allocate queue";
-        else 
+            throw "ERROR: attempting to access an element in an empty queue";
+        else
             return data[iHead()];
+    }
+
+    /**********************************************
+ * queue : BACK
+ * Access the oldest value from the queue by
+ * reference
+ **********************************************/
+    template <class T>
+    T& queue <T> ::back()
+    {
+        if (empty())
+            throw "ERROR: attempting to access an element in an empty queue";
+        else
+            return data[iTail()];
+    }
+
+    /**********************************************
+     * queue : BACK
+     * Access the oldest value from the queue by
+     * const
+     **********************************************/
+    template <class T>
+    const T& queue <T> ::back() const
+    {
+        if (empty())
+            throw "ERROR: attempting to access an element in an empty queue";
+        else
+            return data[iTail()];
     }
 };
 #endif // queue_H
-
