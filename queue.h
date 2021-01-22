@@ -326,8 +326,8 @@ namespace custom
         else
             return data[iHead()];
     }
-
-        /**********************************************
+    
+    /**********************************************
      * queue : BACK
      * Access the oldest value from the queue by 
      * reference
@@ -336,7 +336,7 @@ namespace custom
     T& queue <T> :: back()
     {
         if (empty())
-            throw "ERROR: Unable to allocate queue";
+            throw "ERROR: attempting to access an element in an empty queue";
         else 
             return data[iTail()];
     }
@@ -350,7 +350,7 @@ namespace custom
     const T& queue <T> :: back() const
     {
         if (empty())
-            throw "ERROR: Unable to allocate queue";
+            throw "ERROR: attempting to access an element in an empty queue";
         else 
             return data[iTail()];
     }
