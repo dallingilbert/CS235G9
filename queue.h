@@ -114,27 +114,20 @@ namespace custom
             throw "Bad allocation";
         }
 
-        int newPush = 0;
-        for (int i = numPop; i < numPush; i++)
-            newData[newPush++] = data[i % numCapacity];
-
-        //numPush = newPush;
-        
-        if (data != NULL)
+        int index = 0;
+        for (int i = 0; i < size(); i++)
         {
-            delete[] data;
+            int index = (iHead() + i) % capacity();
+            newData[i] = data[index];
+
         }
 
+        delete[] data;
         data = newData;
 
-        if (newCap < capacity())
-        {
-            numPop = 0;
-            setPush(newCap);
-        }
-
         setCapacity(newCap);
-
+        setPush(size());
+        setPop(0);
     };
 
     /********************************************
