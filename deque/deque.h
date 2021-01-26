@@ -170,7 +170,12 @@ namespace custom
     template <class T>
     int deque <T> ::iNormalized(int index) const
     {
-        return index % capacity(); // NOT A COMPLETE SOLUTION
+        while ((index % capacity()) < 0)
+        {
+            index += size();
+        }
+        
+        return index % capacity(); // MIGHT WORK
     }
     
     /********************************************
