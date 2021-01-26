@@ -30,5 +30,5 @@ a.out: deque.h assignment04.o
 #      dollars.o      : the Dollars class
 #      stock.o        : the logic for the stock program
 ##############################################################
-assignment03.o: deque.h assignment04.cpp
+assignment04.o: deque.h assignment04.cpp
 	g++ -c assignment04.cpp
