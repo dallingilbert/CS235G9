@@ -1,20 +1,20 @@
 /***********************************************************************
  * Header:
- *    Queue
+ *    Deque
  * Summary:
- *    This class contains the notion of a queue: a bucket to hold
+ *    This class contains the notion of a deque: a bucket to hold
  *    data for the user. This is just a starting-point for more advanced
- *    constainers such as the queue, set, queue, queue, deque, and map
+ *    constainers such as the deque, set, deque, deque, deque, and map
  *    which we will build later this semester.
  *
  *    This will contain the class definition of:
- *       queue             : similar to std::queue
+ *       Dequeue             : similar to std::deque
  * Author
  *    Br. Helfrich
  ************************************************************************/
 
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef DEQUEUE_H
+#define DEQUEUE_H
 #include <iostream>
 #include <cstddef>
 #include <cassert>  // because I am paranoid
@@ -31,43 +31,47 @@ namespace custom
 {
 
     /************************************************
-    * queue
+    * deque
     * A class that holds stuff
     ***********************************************/
     template <class T>
-    class queue
+    class deque
     {
     private:
         // member variables
         T* data;
-        int numPush;
-        int numPop;
+        int iFront;
+        int iBack;
         int numCapacity;
 
         // setters
-        void setPush(int numPush) { this->numPush = numPush; }
-        void setPop(int numPop) { this->numPop = numPop; }
+        void setFront(int iFront) { this->iFront = iFront; }
+        void setBack(int iBack) { this->iBack = iBack; }
         void setCapacity(int numCapacity) { this->numCapacity = numCapacity; }
 
         // private member methods
         void resize(int newCap) throw(const char*);
-        int iHead() { return (getPop() % capacity()); }
-        int iTail() { return ((getPush() - 1) % capacity()); }
+        //int iHead() { return (getBack() % capacity()); }
+        //int iTail() { return ((getFront() - 1) % capacity()); }
+        int capacity() const { return numCapacity; }
+        int iFrontNormalized() const;
+        int iBackNormalized() const;
+        int iNormalized(int index) const;
 
     public:
         // default constructor and non-default constructors
-        queue()
+        deque()
         {
             setCapacity(0);
-            setPop(0);
-            setPush(0);
+            setBack(0);
+            setFront(0);
             this->data = NULL;
         }
-        queue(int numCapacity);
-        queue(const queue& rhs);
+        deque(int numCapacity);
+        deque(const deque& rhs);
 
         // destructor
-        ~queue()
+        ~deque()
         {
             if (data != NULL)
             {
@@ -76,20 +80,26 @@ namespace custom
         }
 
         // overloaded operators
-        queue& operator = (const queue<T>& rhs) throw(const char*);
+        deque& operator = (const deque<T>& rhs) throw(const char*);
 
         // getters
-        int size() const { return (getPush() - getPop()); }
-        int capacity() const { return numCapacity; }
-        int getPop() const { return numPop; }
-        int getPush() const { return numPush; }
+        int size() const { return (getBack() - (getFront() + 1)); }
+        int getBack() const { return iBack; }
+        int getFront() const { return iFront; }
 
 
         // public member methods 
         bool empty() const { return size() == 0; }
         void clear();
-        void push(const T& t);
-        void pop();
+
+        // push methods
+        void push_back(const T& t);
+        void push_front(const T& t);
+
+        // pop methods
+        void pop_back();
+        void pop_front();
+
         T& top();
         const T& top() const;
         T& front();
@@ -99,10 +109,10 @@ namespace custom
     };
 
     /*******************************************
-     * queue :: RESIZE
+     * deque :: RESIZE
      *******************************************/
     template <class T>
-    void queue <T> ::resize(int newCap) throw(const char*)
+    void deque <T> ::resize(int newCap) throw(const char*)
     {
         T* newData;
         try
@@ -117,7 +127,7 @@ namespace custom
         int index = 0;
         for (int i = 0; i < size(); i++)
         {
-            int index = (iHead() + i) % capacity();
+            int index = ((getBack() % capacity()) + i) % capacity();
             newData[i] = data[index];
 
         }
@@ -126,53 +136,62 @@ namespace custom
         data = newData;
 
         setCapacity(newCap);
-        setPush(size());
-        setPop(0);
+        setFront(size());
+        setBack(0);
     };
 
     /********************************************
-    * queue :: Top
-    * Note that you have to use "typename" before
-    * the return value type
-    ********************************************/
+     * deque :: iFrontNormalized()
+     * Note that you have to use "typename" before
+     * the return value type
+     ********************************************/
     template <class T>
-    T& queue <T> ::top()
+    int deque <T> ::iFrontNormalized() const
     {
-        if (!empty())
-        {
-            return data[size() - 1];
-        }
-        else if (empty())
-        {
-            throw "ERROR: Unable to reference the element from an empty queue";
-        }
-    };
+        return iNormalized(getFront());
+    }
 
     /********************************************
-    * queue :: Top
-    * Note that you have to use "typename" before
-    * the return value type
-    ********************************************/
+     * deque :: iBackNormalized()
+     * Note that you have to use "typename" before
+     * the return value type
+     ********************************************/
     template <class T>
-    const T& queue <T> ::top() const
+    int deque <T> ::iBackNormalized() const
     {
-        if (!empty())
-        {
-            return data[size() - 1];
-        }
-        else
-        {
-            throw "ERROR: Unable to reference the element from an empty queue\n";
-        }
+        return iNormalized(getBack());
+    }
+
+    /********************************************
+     * deque :: iNormalized()
+     * Note that you have to use "typename" before
+     * the return value type
+     ********************************************/
+    template <class T>
+    int deque <T> ::iNormalized(int index) const
+    {
+        return index % capacity(); // NOT A COMPLETE SOLUTION
+    }
+    
+    /********************************************
+     * deque :: Clear
+     * Note that you have to use "typename" before
+     * the return value type
+     ********************************************/
+    template <class T>
+    void deque <T> ::clear()
+    {
+        setFront(0);
+        setBack(-1);
     };
 
     /********************************************
-    * queue :: Push
+    * deque :: Push Back
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
     template <class T>
-    void queue <T> ::push(const T& t)
+    void deque <T> ::push_back(const T& t)
     {
         if (capacity() == 0)
         {
@@ -182,46 +201,66 @@ namespace custom
         {
             resize(capacity() * 2);
         }
-        setPush(getPush() + 1);
-        data[iTail()] = t;
-        //std::cout << "Num: " << size() << endl;
+        setBack(getBack() + 1);
+        data[iBackNormalized()] = t;
     };
 
     /********************************************
-     * queue :: Clear
-     * Note that you have to use "typename" before
-     * the return value type
-     ********************************************/
+    * deque :: Push Front
+    * Note that you have to use "typename" before
+    * the return value type
+    ********************************************/
     template <class T>
-    void queue <T> ::clear()
+    void deque <T> ::push_front(const T& t)
     {
-        setPush(0);
-        setPop(0);
+        if (capacity() == 0)
+        {
+            resize(1);
+        }
+        if (size() == capacity())
+        {
+            resize(capacity() * 2);
+        }
+        setFront(getFront() - 1);
+        data[iFrontNormalized()] = t;
     };
 
     /********************************************
-     * queue :: Pop
+     * deque :: Pop Back
      * Note that you have to use "typename" before
      * the return value type
      ********************************************/
     template <class T>
-    void queue <T> ::pop()
+    void deque <T> ::pop_back()
     {
         if (!empty())
-            setPop(getPop() + 1);
+            setBack(getBack() - 1);
         else
-            return;
+            return "Error!";
+    };
+
+    /********************************************
+     * deque :: Pop Front
+     * Note that you have to use "typename" before
+     * the return value type
+     ********************************************/
+    template <class T>
+    void deque <T> ::pop_front()
+    {
+        if (!empty())
+            setFront(getFront() + 1);
+        else
+            return "Error!";
     };
 
     /*******************************************
-     * queue :: Assignment operator
+     * deque :: Assignment operator
      *******************************************/
     template <class T>
-    queue <T>& queue <T> :: operator = (const queue <T>& rhs) throw(const char*)
+    deque <T>& deque <T> :: operator = (const deque <T>& rhs) throw(const char*)
     {
         // initialize all member variables
-        setPush(0);
-        setPop(0);
+        clear();
 
         if (data != NULL)
         {
@@ -233,35 +272,35 @@ namespace custom
         {
             return *this;
         }
-        else
-            resize(rhs.capacity());
+        else if (capacity() < rhs.size())
+            resize(rhs.size());
 
-        for (int i = rhs.getPop(); i < rhs.getPush(); i++)
-            push(rhs.data[i % rhs.capacity()]);
+        for (int i = rhs.getFront(); i < rhs.getBack(); i++)
+            push_back(rhs.data[iNormalized(i)]);
 
         return *this;
     }
 
     /*******************************************
-     * queue :: COPY CONSTRUCTOR
+     * deque :: COPY CONSTRUCTOR
      *******************************************/
     template <class T>
-    queue <T> ::queue(const queue <T>& rhs)
+    deque <T> ::deque(const deque <T>& rhs)
     {
         this->data = NULL;
-        setPush(0);
+        setFront(0);
         setCapacity(0);
-        setPop(0);
+        setBack(0);
 
         *this = rhs;
     }
 
     /**********************************************
-     * queue : NON-DEFAULT CONSTRUCTOR
+     * deque : NON-DEFAULT CONSTRUCTOR
      * Preallocate the array to "capacity"
      **********************************************/
     template <class T>
-    queue <T> ::queue(int numCapacity)
+    deque <T> ::deque(int numCapacity)
     {
         assert(numCapacity >= 0);
 
@@ -270,7 +309,7 @@ namespace custom
         if (numCapacity == 0)
         {
             cerr << "numCapacity is 0 -----" << endl;
-            queue();
+            deque();
             return;
         }
 
@@ -288,64 +327,64 @@ namespace custom
 
         // copy over the stuff
         setCapacity(numCapacity);
-        setPop(0);
-        setPush(0);
+        setBack(0);
+        setFront(0);
     }
 
     /**********************************************
-     * queue : FRONT
-     * Access the oldest value from the queue by
+     * deque : FRONT
+     * Access the oldest value from the deque by
      * reference
      **********************************************/
     template <class T>
-    T& queue <T> ::front()
+    T& deque <T> ::front()
     {
         if (empty())
-            throw "ERROR: attempting to access an element in an empty queue";
+            throw "ERROR: attempting to access an element in an empty deque";
         else
-            return data[iHead()];
+            return data[iFrontNormalized()];
     }
 
     /**********************************************
-     * queue : FRONT
-     * Access the oldest value from the queue by
+     * deque : FRONT
+     * Access the oldest value from the deque by
      * const
      **********************************************/
     template <class T>
-    const T& queue <T> ::front() const
+    const T& deque <T> ::front() const
     {
         if (empty())
-            throw "ERROR: attempting to access an element in an empty queue";
+            throw "ERROR: attempting to access an element in an empty deque";
         else
-            return data[iHead()];
+            return data[iFrontNormalized()];
     }
     
     /**********************************************
-     * queue : BACK
-     * Access the oldest value from the queue by 
+     * deque : BACK
+     * Access the oldest value from the deque by 
      * reference
      **********************************************/
     template <class T>
-    T& queue <T> :: back()
+    T& deque <T> :: back()
     {
         if (empty())
-            throw "ERROR: attempting to access an element in an empty queue";
+            throw "ERROR: attempting to access an element in an empty deque";
         else 
-            return data[iTail()];
+            return data[iBackNormalized()];
     }
 
     /**********************************************
-     * queue : BACK
-     * Access the oldest value from the queue by 
+     * deque : BACK
+     * Access the oldest value from the deque by 
      * const
      **********************************************/
     template <class T>
-    const T& queue <T> :: back() const
+    const T& deque <T> :: back() const
     {
         if (empty())
-            throw "ERROR: attempting to access an element in an empty queue";
+            throw "ERROR: attempting to access an element in an empty deque";
         else 
-            return data[iTail()];
+            return data[iBackNormalized()];
     }
 };
-#endif // queue_H
+#endif // DEQUEUE_H

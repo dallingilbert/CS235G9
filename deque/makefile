@@ -20,12 +20,9 @@
 ##############################################################
 # The main rule
 ##############################################################
-a.out: queue.h assignment03.o dollars.o stock.o Other.o port.o
-	g++ -o a.out assignment03.o dollars.o stock.o Other.o port.o
-	tar -cf assignment03.tar *.h *.cpp makefile
-
-dollarsTest: dollars.o dollarsTest.cpp
-	g++ -o dollarsTest dollars.o dollarsTest.cpp
+a.out: deque.h assignment04.o
+	g++ -o a.out assignment04.o 
+	tar -cf assignment04.tar *.h *.cpp makefile
 
 ##############################################################
 # The individual components
@@ -33,17 +30,5 @@ dollarsTest: dollars.o dollarsTest.cpp
 #      dollars.o      : the Dollars class
 #      stock.o        : the logic for the stock program
 ##############################################################
-assignment03.o: queue.h assignment03.cpp
-	g++ -c assignment03.cpp
-
-dollars.o: dollars.h dollars.cpp
-	g++ -c dollars.cpp
-
-stock.o: stock.h stock.cpp queue.h Port.h
-	g++ -c stock.cpp
-
-port.o: Port.h port.cpp dollars.h
-	g++ -c port.cpp
-
-Other.o: Other.h Other.cpp dollars.h
-	g++ -c Other.cpp
+assignment03.o: deque.h assignment04.cpp
+	g++ -c assignment04.cpp
