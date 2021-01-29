@@ -61,7 +61,7 @@ int main()
    switch (choice)
    {
       case 'a':
-         nowServing();
+         //nowServing();
          break;
       case '1':
          testSimple();
