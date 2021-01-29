@@ -20,7 +20,7 @@
 ##############################################################
 # The main rule
 ##############################################################
-a.out: deque.h assignment04.o
+a.out: deque.h assignment04.o nowServing.o
 	g++ -o a.out assignment04.o 
 	tar -cf assignment04.tar *.h *.cpp makefile
 
@@ -30,5 +30,8 @@ a.out: deque.h assignment04.o
 #      dollars.o      : the Dollars class
 #      stock.o        : the logic for the stock program
 ##############################################################
-assignment04.o: deque.h assignment04.cpp
+assignment04.o: deque.h assignment04.cpp  
 	g++ -c assignment04.cpp
+
+nowServing.o: nowServing.h nowServing.cpp
+	g++ -c nowServing.cpp

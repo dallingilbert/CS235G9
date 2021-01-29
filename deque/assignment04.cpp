@@ -36,9 +36,9 @@ void testErrors();
 // I suggest first commenting out all of these tests, then try to use only
 // TEST1.  Then, when TEST1 works, try TEST2 and so on.
 #define TEST1   // for testSimple()
-#define TEST2   // for testPushPopFront()
-#define TEST3   // for testWrapping()
-#define TEST4   // for testErrors()
+//#define TEST2   // for testPushPopFront()
+//#define TEST3   // for testWrapping()
+//#define TEST4   // for testErrors()
 
 /**********************************************************************
  * MAIN
