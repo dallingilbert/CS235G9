@@ -130,7 +130,6 @@ namespace custom
         {
             int index = ((getBack() % capacity()) + i) % capacity();
             newData[i] = data[index];
-
         }
 
         delete[] data;
@@ -171,12 +170,12 @@ namespace custom
     template <class T>
     int deque <T> ::iNormalized(int index) const
     {
-        while ((index % capacity()) < 0)
-        {
-            index += size();
-        }
-        
-        return index % capacity(); // MIGHT WORK
+        if (index >= 0)
+            return index % capacity();
+        else if (index < 0)
+            return (capacity() + index) % capacity();
+        else 
+            return (capacity() + (index % capacity())) % capacity();
     }
     
     /********************************************
@@ -203,7 +202,7 @@ namespace custom
         {
             resize(1);
         }
-        if (size() == capacity())
+        else if (size() == capacity())
         {
             resize(capacity() * 2);
         }
