@@ -128,7 +128,7 @@ namespace custom
         int index = 0;
         for (int i = 0; i < size(); i++)
         {
-            int index = ((getBack() % capacity()) + i) % capacity();
+            int index = (getFront() + i) % capacity();
             newData[i] = data[index];
         }
 
@@ -136,8 +136,8 @@ namespace custom
         data = newData;
 
         setCapacity(newCap);
-        setFront(size());
-        setBack(-1);
+        //setFront(iFrontNormalized());
+        //setBack(iBackNormalized());
     };
 
     /********************************************
@@ -222,11 +222,15 @@ namespace custom
         {
             resize(1);
         }
-        if (size() == capacity())
+        else if (size() == capacity())
         {
             resize(capacity() * 2);
         }
-        setFront(getFront() - 1);
+        if (empty())
+            setBack(getBack() + 1);
+        else 
+            setFront(getFront() - 1);
+            
         data[iFrontNormalized()] = t;
     };
 
@@ -280,7 +284,7 @@ namespace custom
         else if (capacity() < rhs.size())
             resize(rhs.size());
 
-        for (int i = rhs.getFront(); i < rhs.getBack(); i++)
+        for (int i = rhs.getFront(); i <= rhs.getBack(); i++)
             push_back(rhs.data[iNormalized(i)]);
 
         return *this;

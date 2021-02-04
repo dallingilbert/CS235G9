@@ -37,7 +37,7 @@ void testErrors();
 // TEST1.  Then, when TEST1 works, try TEST2 and so on.
 #define TEST1   // for testSimple()
 #define TEST2   // for testPushPopFront()
-//#define TEST3   // for testWrapping()
+#define TEST3   // for testWrapping()
 //#define TEST4   // for testErrors()
 
 /**********************************************************************
