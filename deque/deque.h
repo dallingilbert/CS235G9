@@ -128,7 +128,7 @@ namespace custom
         int index = 0;
         for (int i = 0; i < size(); i++)
         {
-            int index = (getFront() + i) % capacity();
+            int index = (iFrontNormalized() + i) % capacity();
             newData[i] = data[index];
         }
 
@@ -170,12 +170,7 @@ namespace custom
     template <class T>
     int deque <T> ::iNormalized(int index) const
     {
-        if (index >= 0)
-            return index % capacity();
-        else if (index < 0)
-            return (capacity() + index) % capacity();
-        else 
-            return (capacity() + (index % capacity())) % capacity();
+        return (capacity() + (index % capacity())) % capacity();
     }
     
     /********************************************
@@ -226,11 +221,12 @@ namespace custom
         {
             resize(capacity() * 2);
         }
-        if (empty())
+        
+        if (empty()) 
             setBack(getBack() + 1);
-        else 
+        else
             setFront(getFront() - 1);
-            
+
         data[iFrontNormalized()] = t;
     };
 

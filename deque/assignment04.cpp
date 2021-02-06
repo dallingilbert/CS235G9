@@ -259,6 +259,8 @@ void testWrapping()
          else if (command == "?")
          {
             cout << "\tSize:     " << d.size()     << endl;
+            cout << "\tiBack:     " << d.getBack() << endl;
+            cout << "\tiFront:     " << d.getFront() << endl;
          }
          else if (command == "*")
          {
