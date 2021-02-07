@@ -17,9 +17,9 @@
 #define SET_H
 #include <iostream>
 #include <cstddef>
-#include <cassert>  // because I am paranoid
+#include <cassert> // because I am paranoid
 
- // a little helper macro to write debug code
+// a little helper macro to write debug code
 #ifdef NDEBUG
 #define Debug(statement)
 #else
@@ -39,28 +39,28 @@ namespace custom
     {
     private:
         // member variables
-        T* data;
+        T *data;
         int numElements;
         int numCapacity;
 
         // setters
-        void setElements(int numElements) { this->numElements = numElements; }
+        void setSize(int numElements) { this->numElements = numElements; }
         void setCapacity(int numCapacity) { this->numCapacity = numCapacity; }
 
         // private member methods
-        void resize(int newCap) throw(const char*);
-        int capacity() const { return numCapacity; }
+        void resize(int newCap) throw(const char *);
+        int findIndex(const T &t) const;
 
     public:
         // default constructor and non-default constructors
         set()
         {
             setCapacity(0);
-            setElements(0);
+            setSize(0);
             this->data = NULL;
         }
         set(int numCapacity);
-        set(const set& rhs);
+        set(const set &rhs);
 
         // destructor
         ~set()
@@ -72,44 +72,131 @@ namespace custom
         }
 
         // overloaded operators
-        set& operator = (const set<T>& rhs) throw(const char*);
+        set &operator=(const set<T> &rhs) throw(const char *);
 
         // getters
-        int size() const { return getBack() - getFront() + 1; }
+        int size() const { return numElements; }
 
-
-        // public member methods 
+        // public member methods
         bool empty() const { return size() == 0; }
         void clear();
+        void sort();
+        void insert(const T& t)
+        {
+            data.sort();
+
+            iInsert = findIndex(t);
+
+            if (data[iInsert] != t)
+            {
+                for (int i = numElements; i < iInsert)
+            }
+        }
+
+        iterator find(const T& t)
+        {
+            data.sort();
+
+            iBegin = 0;
+            iEnd = numElements - 1;
+
+            while(iBegin <= iEnd)
+            {
+                iMiddle = (iBegin + iEnd) / 2;
+
+                if (t == data[iMiddle])
+                    return iMiddle;
+                else if (t < data[iMiddle])
+                    iEnd = iMiddle - 1;
+                else
+                    iBegin = iMiddle + 1;
+
+                return numElements;
+            }
+        }
+
+        // the various iterator interfaces
+        class iterator;
+        iterator begin() { return iterator(data); }
+        iterator end();
     };
+
+    /**************************************************
+    * SET ITERATOR
+    * An iterator through array
+    *************************************************/
+    template <class T>
+    class set<T>::iterator
+    {
+    public:
+        // constructors, destructors, and assignment operator
+        iterator() : p(NULL) {}
+        iterator(T *p) : p(p) {}
+        iterator(const iterator &rhs) { *this = rhs; }
+        iterator &operator=(const iterator &rhs)
+        {
+            this->p = rhs.p;
+            return *this;
+        }
+
+        // equals, not equals operator
+        bool operator!=(const iterator &rhs) const { return rhs.p != this->p; }
+        bool operator==(const iterator &rhs) const { return rhs.p == this->p; }
+
+        // dereference operator
+        T &operator*() { return *p; }
+        const T &operator*() const { return *p; }
+
+        // prefix increment
+        iterator &operator++()
+        {
+            p++;
+            return *this;
+        }
+
+        // postfix increment
+        iterator operator++(int postfix)
+        {
+            iterator tmp(*this);
+            p++;
+            return tmp;
+        }
+
+    private:
+        T *p;
+    };
+
+    /********************************************
+    * SET :: END
+    * Note that you have to use "typename" before
+    * the return value type
+    ********************************************/
+    template <class T>
+    typename set<T>::iterator set<T>::end()
+    {
+        return iterator(data + numElements);
+    }
 
     /*******************************************
      * set :: RESIZE
      *******************************************/
     template <class T>
-    void set <T> ::resize(int newCap) throw(const char*)
+    void set<T>::resize(int newCap) throw(const char *)
     {
-        T* newData;
         try
         {
-            newData = new T[newCap];
+            T *arrayTemp = new T[newCap];
+            for (int i = 0; i < numCapacity && i < newCap; i++)
+                arrayTemp[i] = data[i];
+
+            delete[] data;
+            data = arrayTemp;
+            setCapacity(newCap);
         }
         catch (std::bad_alloc)
         {
-            throw "Bad allocation";
+            throw "ERROR: Unable to allocate buffer a new buffer for set";
         }
-
-        int index = 0;
-        for (int i = 0; i < size(); i++)
-        {
-            int index = (getFront() + i) % capacity();
-            newData[i] = data[index];
-        }
-
-        delete[] data;
-        data = newData;
-
-        setCapacity(newCap);
     };
 
     /********************************************
@@ -118,17 +205,17 @@ namespace custom
      * the return value type
      ********************************************/
     template <class T>
-    void set <T> ::clear()
+    void set<T>::clear()
     {
-        setFront(0);
-        setBack(-1);
+        setSize(0);
+        setCapacity(0);
     };
 
     /*******************************************
      * set :: Assignment operator
      *******************************************/
     template <class T>
-    set <T>& set <T> :: operator = (const set <T>& rhs) throw(const char*)
+    set<T> &set<T>::operator=(const set<T> &rhs) throw(const char *)
     {
         // initialize all member variables
         clear();
@@ -143,11 +230,11 @@ namespace custom
         {
             return *this;
         }
-        else if (capacity() < rhs.size())
+        else if (numCapacity < rhs.size())
             resize(rhs.size());
 
-        for (int i = rhs.getFront(); i <= rhs.getBack(); i++)
-            push_back(rhs.data[iNormalized(i)]);
+        for (int i = 0; i < size(); i++)
+            data[i] = rhs.data[i];
 
         return *this;
     }
@@ -156,10 +243,10 @@ namespace custom
      * set :: COPY CONSTRUCTOR
      *******************************************/
     template <class T>
-    set <T> ::set(const set <T>& rhs)
+    set<T>::set(const set<T> &rhs)
     {
         this->data = NULL;
-        setElements(0);
+        setSize(0);
         setCapacity(0);
 
         *this = rhs;
@@ -170,9 +257,10 @@ namespace custom
      * Preallocate the array to "capacity"
      **********************************************/
     template <class T>
-    set <T> ::set(int numCapacity)
+    set<T>::set(int numCapacity)
     {
         assert(numCapacity >= 0);
+        this->data = NULL;
 
         // do nothing if there is nothing to do.
         // since we can't grow an array, this is kinda pointless
@@ -184,7 +272,7 @@ namespace custom
         }
 
         // attempt to allocate
-        data = new T[numCapacity];
+        T *data;
         try
         {
             data = new T[numCapacity];
@@ -194,9 +282,39 @@ namespace custom
             throw "ERROR: Unable to allocate buffer";
         }
 
-
         // copy over the stuff
+        setSize(0);
         setCapacity(numCapacity);
     }
-};
+
+    /**********************************************
+     * set : FIND INDEX
+     * Determines where 
+     **********************************************/
+    template <class T>
+    int set<T>::findIndex(const T &t) const
+    {
+    }
+
+    template <class T>
+    void set<T>::sort() 
+    {
+        int pos = 1;
+        for (int i = 0; i < numElements; i++)
+        {
+            T tempArray = data;
+            if (tempArray[i] < tempArray[i + pos])
+                data[i] = tempArray[i + pos]
+            else 
+                data[i] = tempArray[i];
+
+            pos++;
+        }
+
+        for (int i = 0; i < numElements; i++)
+        {
+            cout << data[i] << endl;
+        }
+    }
+};     // namespace custom
 #endif // SET_H
