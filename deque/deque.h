@@ -131,13 +131,13 @@ namespace custom
             int index = (iFrontNormalized() + i) % capacity();
             newData[i] = data[index];
         }
-
+        
         delete[] data;
         data = newData;
 
         setCapacity(newCap);
-        //setFront(iFrontNormalized());
-        //setBack(iBackNormalized());
+        setBack(size() - 1);
+        setFront(0);
     };
 
     /********************************************
@@ -222,10 +222,7 @@ namespace custom
             resize(capacity() * 2);
         }
         
-        if (empty()) 
-            setBack(getBack() + 1);
-        else
-            setFront(getFront() - 1);
+        setFront(getFront() - 1);
 
         data[iFrontNormalized()] = t;
     };
@@ -281,7 +278,7 @@ namespace custom
             resize(rhs.size());
 
         for (int i = rhs.getFront(); i <= rhs.getBack(); i++)
-            push_back(rhs.data[iNormalized(i)]);
+            push_back(rhs.data[rhs.iNormalized(i)]);
 
         return *this;
     }

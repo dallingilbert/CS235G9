@@ -1,7 +1,7 @@
 ###############################################################
 # Program:
 #     Assignment 03, QUEUE
-#     Brother XXXX, CS235
+#     Brother Kirby, CS235
 # Author:
 #     John McCleve & Dallin Gilbert
 # Summary:
@@ -14,7 +14,7 @@
 # Most challanging part:
 #	  John: Trying to find out where are queue wasn't wrapping
 #     around from the front to the back
-#	  Dallin:
+#	  Dallin: 
 ###############################################################
 
 ##############################################################
