@@ -19,7 +19,7 @@
 #include <cstddef>
 #include <cassert> // because I am paranoid
 
-// a little helper macro to write debug code
+ // a little helper macro to write debug code
 #ifdef NDEBUG
 #define Debug(statement)
 #else
@@ -39,7 +39,7 @@ namespace custom
     {
     private:
         // member variables
-        T *data;
+        T* data;
         int numElements;
         int numCapacity;
 
@@ -48,8 +48,8 @@ namespace custom
         void setCapacity(int numCapacity) { this->numCapacity = numCapacity; }
 
         // private member methods
-        void resize(int newCap) throw(const char *);
-        int findIndex(const T &t) const;
+        void resize(int newCap) throw(const char*);
+        int findIndex(const T& t) const;
 
     public:
         // default constructor and non-default constructors
@@ -60,7 +60,7 @@ namespace custom
             this->data = NULL;
         }
         set(int numCapacity);
-        set(const set &rhs);
+        set(const set& rhs);
 
         // destructor
         ~set()
@@ -72,7 +72,7 @@ namespace custom
         }
 
         // overloaded operators
-        set &operator=(const set<T> &rhs) throw(const char *);
+        set& operator=(const set<T>& rhs) throw(const char*);
 
         // getters
         int size() const { return numElements; }
@@ -81,26 +81,19 @@ namespace custom
         bool empty() const { return size() == 0; }
         void clear();
         void sort();
-        void insert(const T& t)
-        {
-            data.sort();
+        void insert(const T& t);
+        /*Set<T> operator && (const Set<T>& rhs) const;
+        Set<T> operator || (const Set<T>& rhs) const;
+        Set<T> operator - (const Set<T>& rhs) const;*/
 
-            iInsert = findIndex(t);
-
-            if (data[iInsert] != t)
-            {
-                for (int i = numElements; i < iInsert)
-            }
-        }
-
-        iterator find(const T& t)
+        /*iterator find(const T& t)
         {
             data.sort();
 
             iBegin = 0;
             iEnd = numElements - 1;
 
-            while(iBegin <= iEnd)
+            while (iBegin <= iEnd)
             {
                 iMiddle = (iBegin + iEnd) / 2;
 
@@ -113,11 +106,13 @@ namespace custom
 
                 return numElements;
             }
-        }
+        }*/
 
         // the various iterator interfaces
         class iterator;
-        iterator begin() { return iterator(data); }
+        //iterator find(const T& t);
+       iterator erase(iterator& it);
+        iterator begin();
         iterator end();
     };
 
@@ -131,24 +126,24 @@ namespace custom
     public:
         // constructors, destructors, and assignment operator
         iterator() : p(NULL) {}
-        iterator(T *p) : p(p) {}
-        iterator(const iterator &rhs) { *this = rhs; }
-        iterator &operator=(const iterator &rhs)
+        iterator(T* p) : p(p) {}
+        iterator(const iterator& rhs) { *this = rhs; }
+        iterator& operator=(const iterator& rhs)
         {
             this->p = rhs.p;
             return *this;
         }
 
         // equals, not equals operator
-        bool operator!=(const iterator &rhs) const { return rhs.p != this->p; }
-        bool operator==(const iterator &rhs) const { return rhs.p == this->p; }
+        bool operator!=(const iterator& rhs) const { return rhs.p != this->p; }
+        bool operator==(const iterator& rhs) const { return rhs.p == this->p; }
 
         // dereference operator
-        T &operator*() { return *p; }
-        const T &operator*() const { return *p; }
+        T& operator*() { return *p; }
+        const T& operator*() const { return *p; }
 
         // prefix increment
-        iterator &operator++()
+        iterator& operator++()
         {
             p++;
             return *this;
@@ -163,8 +158,19 @@ namespace custom
         }
 
     private:
-        T *p;
+        T* p;
     };
+
+    /********************************************
+    * SET :: BEGIN
+    * Note that you have to use "typename" before
+    * the return value type
+    ********************************************/
+    template <class T>
+    typename set<T>::iterator set<T>::begin()
+    {
+        return iterator(data);
+    }
 
     /********************************************
     * SET :: END
@@ -181,11 +187,11 @@ namespace custom
      * set :: RESIZE
      *******************************************/
     template <class T>
-    void set<T>::resize(int newCap) throw(const char *)
+    void set<T>::resize(int newCap) throw(const char*)
     {
         try
         {
-            T *arrayTemp = new T[newCap];
+            T* arrayTemp = new T[newCap];
             for (int i = 0; i < numCapacity && i < newCap; i++)
                 arrayTemp[i] = data[i];
 
@@ -198,6 +204,37 @@ namespace custom
             throw "ERROR: Unable to allocate buffer a new buffer for set";
         }
     };
+
+    /********************************************
+   * SET :: ERASE
+   * Note that you have to use "typename" before
+   * the return value type
+   ********************************************/
+    template <class T>
+    typename set<T>::iterator set<T>::erase(set<T>::iterator& it)
+    {
+        int in = findIndex(*it);
+        if (in == -1)
+            return end();
+        int neg = in;
+
+        T* temp = new T[numCapacity];
+
+        for (int x = 0, y = 0; x < numElements - 1; x++, y++)
+        {
+            if (x == in)
+            {
+                temp[x] = data[y];
+                y++;
+                continue;
+            }
+            temp[x] = data[x];
+        }
+        this->data = temp;
+        numElements--;
+        return (data + neg);
+    }
+
 
     /********************************************
      * set :: Clear
@@ -215,7 +252,7 @@ namespace custom
      * set :: Assignment operator
      *******************************************/
     template <class T>
-    set<T> &set<T>::operator=(const set<T> &rhs) throw(const char *)
+    set<T>& set<T>::operator=(const set<T>& rhs) throw(const char*)
     {
         // initialize all member variables
         clear();
@@ -243,7 +280,7 @@ namespace custom
      * set :: COPY CONSTRUCTOR
      *******************************************/
     template <class T>
-    set<T>::set(const set<T> &rhs)
+    set<T>::set(const set<T>& rhs)
     {
         this->data = NULL;
         setSize(0);
@@ -272,7 +309,7 @@ namespace custom
         }
 
         // attempt to allocate
-        T *data;
+        T* data;
         try
         {
             data = new T[numCapacity];
@@ -286,26 +323,68 @@ namespace custom
         setSize(0);
         setCapacity(numCapacity);
     }
+    /********************************************
+    * set :: INSERT
+    * Note that you have to use "typename" before
+    * the return value type
+    ********************************************/
+    template <class T>
+    void set<T>::insert(const T& t)
+    {
+       int index = findIndex(t);
+       if (index == -1 && !empty())
+       {
+           if (size() == numCapacity)
+               resize(numCapacity * 2);
+               
+           int insertInt = 0;
+           for (int x = 0; x < numElements; x++)
+           {
+               if (data[x] <= t)
+                   insertInt = x;
+               else if (data[x] > t)
+               {
+                   insertInt = x - 1;
+                   break;
+               }
+           }
 
+           for (int x = numElements - 1; x > index; x--)
+               data[x + 1] = data[x];
+           data[index + 1] = t;
+           numElements++;
+       }
+       else if (index == -1 && empty())
+       {
+           resize(1);
+           data[0] = t;
+           numElements++;
+       }
+
+    };
     /**********************************************
      * set : FIND INDEX
-     * Determines where 
+     * Determines where
      **********************************************/
     template <class T>
-    int set<T>::findIndex(const T &t) const
+    int set<T>::findIndex(const T& t) const
     {
+        for (int x = 0; x < numElements; x++)
+            if (t == data[x])
+                return x;
+        return -1;
     }
 
     template <class T>
-    void set<T>::sort() 
+    void set<T>::sort()
     {
         int pos = 1;
         for (int i = 0; i < numElements; i++)
         {
             T tempArray = data;
             if (tempArray[i] < tempArray[i + pos])
-                data[i] = tempArray[i + pos]
-            else 
+                data[i] = tempArray[i + pos];
+            else
                 data[i] = tempArray[i];
 
             pos++;

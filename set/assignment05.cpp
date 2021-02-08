@@ -4,7 +4,7 @@
 *    Brother <instructor here>, CS 235
 * Author:
 *    Br. Helfrich
-* Summary: 
+* Summary:
 *    This is a driver program to exercise the Set class.  When you
 *    submit your program, this should not be changed in any way.  That being
 *    said, you may need to modify this once or twice to get it to work.
@@ -37,7 +37,7 @@ void testDifference();
 // I suggest first commenting out all of these tests, then try to use only
 // TEST1.  Then, when TEST1 works, try TEST2 and so on.
 #define TEST1   // for testSimple()
-//#define TEST2   // for testFill()
+#define TEST2   // for testFill()
 //#define TEST3   // for testFind()
 //define TEST4   // for testUnionIntersection()
 //#define TEST5   // for testConstIterator()
@@ -95,7 +95,7 @@ int main()
       default:
          cout << "Unrecognized command, exiting...\n";
    }
-   
+
    return 0;
 }
 
@@ -205,7 +205,7 @@ void testFill()
       // display the two copies
       cout << "\ts1 = " << s1 << endl;
       cout << "\ts2 = " << s2 << endl;
-      cout << "\ts3 = " << s3 << endl;      
+      cout << "\ts3 = " << s3 << endl;
    }
    catch (const char * sError)
    {
@@ -245,11 +245,11 @@ void testFind()
 
       // make a copy of the set using the copy constructor
       set <string> s2(s1);
-   
+
       // look for an item in the set
       cout << "Find items in the set and delete.\n";
       cout << "Enter words to search for, type \"quit\" when done\n";
-      
+
       cout << "\t" << s1 << " > ";
       cin  >> text;
       do
@@ -326,7 +326,7 @@ void testUnionIntersection()
       // compute the union and intersection
       set <float> sIntersection(s1 && s2);
       set <float> sUnion(s1 || s2);
-      
+
       // display the contents
       cout << "s1 = " << s1 << endl;
       cout << "s2 = " << s2 << endl;
@@ -336,7 +336,7 @@ void testUnionIntersection()
    catch (const char * sError)
    {
       cout << sError << endl;
-   }   
+   }
 #endif // TEST4
 }
 
@@ -408,6 +408,6 @@ void testDifference()
    catch (const char * sError)
    {
       cout << sError << endl;
-   }   
+   }
 #endif // TEST6
 }
