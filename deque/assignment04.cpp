@@ -38,7 +38,7 @@ void testErrors();
 #define TEST1   // for testSimple()
 #define TEST2   // for testPushPopFront()
 #define TEST3   // for testWrapping()
-//#define TEST4   // for testErrors()
+#define TEST4   // for testErrors()
 
 /**********************************************************************
  * MAIN

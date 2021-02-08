@@ -51,13 +51,10 @@ namespace custom
 
         // private member methods
         void resize(int newCap) throw(const char*);
-        //int iHead() { return (getBack() % capacity()); }
-        //int iTail() { return ((getFront() - 1) % capacity()); }
         int capacity() const { return numCapacity; }
         int iFrontNormalized() const;
         int iBackNormalized() const;
         int iNormalized(int index) const;
-        //void display() const;
 
     public:
         // default constructor and non-default constructors
@@ -101,8 +98,7 @@ namespace custom
         void pop_back();
         void pop_front();
 
-        T& top();
-        const T& top() const;
+        // front and back methods
         T& front();
         const T& front() const;
         T& back();

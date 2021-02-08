@@ -5,8 +5,8 @@
  *    This will contain just the prototype for nowServing(). You may
  *    want to put other class definitions here as well.
  * Author
- *    Austin Earl
- *    Jeffrey Chumley
+ *    John McCleve
+ *    Dallin Gilbert
  ************************************************************************/
 
 #ifndef NOW_SERVING_H
