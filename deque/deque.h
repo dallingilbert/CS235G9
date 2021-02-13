@@ -51,10 +51,13 @@ namespace custom
 
         // private member methods
         void resize(int newCap) throw(const char*);
+        //int iHead() { return (getBack() % capacity()); }
+        //int iTail() { return ((getFront() - 1) % capacity()); }
         int capacity() const { return numCapacity; }
         int iFrontNormalized() const;
         int iBackNormalized() const;
         int iNormalized(int index) const;
+        //void display() const;
 
     public:
         // default constructor and non-default constructors
@@ -86,7 +89,7 @@ namespace custom
         int getFront() const { return iFront; }
 
 
-        // public member methods 
+        // public member methods
         bool empty() const { return size() == 0; }
         void clear();
 
@@ -98,7 +101,8 @@ namespace custom
         void pop_back();
         void pop_front();
 
-        // front and back methods
+        T& top();
+        const T& top() const;
         T& front();
         const T& front() const;
         T& back();
@@ -124,16 +128,20 @@ namespace custom
         int index = 0;
         for (int i = 0; i < size(); i++)
         {
-            int index = (iFrontNormalized() + i) % capacity();
+            int index = (getFront() + i) % capacity();
             newData[i] = data[index];
         }
-        
-        delete[] data;
+
+        if (data != NULL)
+        {
+            delete[] data;
+            data = NULL;
+        }
         data = newData;
 
         setCapacity(newCap);
-        setBack(size() - 1);
-        setFront(0);
+        //setFront(iFrontNormalized());
+        //setBack(iBackNormalized());
     };
 
     /********************************************
@@ -144,7 +152,7 @@ namespace custom
     template <class T>
     int deque <T> ::iFrontNormalized() const
     {
-        return iNormalized(getFront());
+        return iNormalized(iFront);
     }
 
     /********************************************
@@ -166,9 +174,21 @@ namespace custom
     template <class T>
     int deque <T> ::iNormalized(int index) const
     {
-        return (capacity() + (index % capacity())) % capacity();
+        //return (capacity() + (index % capacity())) % capacity();
+       /* if (index >= 0)
+            return index % capacity();
+        if (index < 0)
+        {
+            int test = (index % capacity()) % capacity();
+            cerr << test << "test" <<endl;
+            return test;*/
+       // else
+        int cap = capacity();
+        int test = ((cap + ((index) % cap)) % cap);
+        //cerr << test << "normal" << endl;
+        return test;
     }
-    
+
     /********************************************
      * deque :: Clear
      * Note that you have to use "typename" before
@@ -199,6 +219,7 @@ namespace custom
         }
         setBack(getBack() + 1);
         data[iBackNormalized()] = t;
+        //cerr << iBackNormalized() <<"back" << endl;
     };
 
     /********************************************
@@ -217,10 +238,10 @@ namespace custom
         {
             resize(capacity() * 2);
         }
-        
-        setFront(getFront() - 1);
 
+        setFront((getFront() - 1));
         data[iFrontNormalized()] = t;
+        //cerr << iFrontNormalized()<< "front"<< endl;
     };
 
     /********************************************
@@ -234,7 +255,7 @@ namespace custom
         if (!empty())
             setBack(getBack() - 1);
         else
-            cout << "Error!";
+            cout << "";
     };
 
     /********************************************
@@ -248,7 +269,7 @@ namespace custom
         if (!empty())
             setFront(getFront() + 1);
         else
-            cout << "Error!";
+            cout << "";
     };
 
     /*******************************************
@@ -274,7 +295,7 @@ namespace custom
             resize(rhs.size());
 
         for (int i = rhs.getFront(); i <= rhs.getBack(); i++)
-            push_back(rhs.data[rhs.iNormalized(i)]);
+            push_back(rhs.data[iNormalized(i)]);
 
         return *this;
     }
@@ -338,7 +359,7 @@ namespace custom
     T& deque <T> ::front()
     {
         if (empty())
-            throw "ERROR: attempting to access an element in an empty deque";
+            throw "ERROR: unable to access data from an empty deque";
         else
             return data[iFrontNormalized()];
     }
@@ -352,36 +373,36 @@ namespace custom
     const T& deque <T> ::front() const
     {
         if (empty())
-            throw "ERROR: attempting to access an element in an empty deque";
+            throw "ERROR: unable to access data from an empty deque";
         else
             return data[iFrontNormalized()];
     }
-    
+
     /**********************************************
      * deque : BACK
-     * Access the oldest value from the deque by 
+     * Access the oldest value from the deque by
      * reference
      **********************************************/
     template <class T>
-    T& deque <T> :: back()
+    T& deque <T> ::back()
     {
         if (empty())
-            throw "ERROR: attempting to access an element in an empty deque";
-        else 
+            throw "ERROR: unable to access data from an empty deque";
+        else
             return data[iBackNormalized()];
     }
 
     /**********************************************
      * deque : BACK
-     * Access the oldest value from the deque by 
+     * Access the oldest value from the deque by
      * const
      **********************************************/
     template <class T>
-    const T& deque <T> :: back() const
+    const T& deque <T> ::back() const
     {
         if (empty())
-            throw "ERROR: attempting to access an element in an empty deque";
-        else 
+            throw "ERROR: unable to access data from an empty deque";
+        else
             return data[iBackNormalized()];
     }
 };
