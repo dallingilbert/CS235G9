@@ -4,7 +4,7 @@
 *    Brother Helfrich, CS 235
 * Author:
 *    Br. Helfrich
-* Summary: 
+* Summary:
 *    This is a driver program to exercise the Node class.  When you
 *    submit your program, this should not be changed in any way.  That being
 *    said, you may need to modify this once or twice to get it to work.
@@ -34,10 +34,10 @@ void testRemove();
 // I suggest first commenting out all of these tests, then try to use only
 // TEST1.  Then, when TEST1 works, try TEST2 and so on.
 #define TEST1   // for testSimple()
-//#define TEST2   // for testInsert()
-//#define TEST3   // for testLoop()
-//#define TEST4   // for testInteractive()
-//#define TEST5   // for testRemove()
+#define TEST2   // for testInsert()
+#define TEST3   // for testLoop()
+#define TEST4   // for testInteractive()
+#define TEST5   // for testRemove()
 
 /**********************************************************************
  * MAIN
@@ -101,7 +101,7 @@ void testSimple()
    {
       cout.setf(ios::fixed | ios::showpoint);
       cout.precision(1);
-   
+
       // Test 1.a: a bool linked list with default constructor
       cout << "Create a bool linked list\n";
       Node <bool> * n1 = new Node <bool> (true);
@@ -117,7 +117,6 @@ void testSimple()
       cout << "\tn1->pNext->pPrev: "
            << (n1->pNext->pPrev ?  "address" : "NULL") << endl;
       freeData(n1);
-   
       // Test 1.b: double linked list and add one element
       cout << "Create a double linked list and add two elements: 1.1 2.2\n";
       Node <double> * n2 = new Node <double> (1.1);
@@ -132,7 +131,7 @@ void testSimple()
            << (n2->pNext->pNext ?  "address" : "NULL") << endl;
       cout << "\tn2->pNext->pPrev: "
            << (n2->pNext->pPrev ?  "address" : "NULL") << endl;
-   
+
       // Test 1.c: copy the double List
       cout << "Copy the double linked list\n";
       Node <double> * n3 = copy(n2);
@@ -154,7 +153,7 @@ void testSimple()
    catch (const char * error)
    {
       cout << error << endl;
-   }   
+   }
 #endif //TEST1
 }
 
@@ -235,15 +234,15 @@ void testInsert()
          cout << "ERROR: element 15 does not point back to 10\n";
       if (n->pNext->pNext->pNext->pPrev != n->pNext->pNext)
          cout << "ERROR: element 20 does not point back to 15\n";
-   
+
       // free up the list
       freeData(n);
    }
    catch (const char * error)
    {
       cout << error << endl;
-   }   
-#endif // TEST2   
+   }
+#endif // TEST2
 }
 
 /*******************************************
@@ -260,7 +259,7 @@ void testLoop()
       cout << "Create a char linked list: { a, b, c, d, e, f }\n";
       Node <char> * n = NULL;
 
-      n = insert(n, 'c', true);            // { c } 
+      n = insert(n, 'c', true);            // { c }
       insert(n, 'd', true);                // { c, d }
       insert(n->pNext, 'f', true);         // { c, d, f }
       n = insert(n, 'b');                  // { b, c, d, f }
@@ -293,7 +292,7 @@ void testLoop()
       cout << "Copy of the list:\n";
       cout << "\t{ " << nCopy << " }\n";
       freeData(nCopy);
-   
+
       // empty the list
       cout << "Empty the list\n";
       freeData(n);
@@ -362,7 +361,7 @@ void testInteractive()
                        i < slot && p->pNext;
                        i++,        p = p->pNext)
                      ;
-               
+
                   insert(p, text, true);
                }
                break;
@@ -386,7 +385,7 @@ void testInteractive()
             default:
                cout << "Unknown command\n";
                cin.ignore(256, '\n');
-         }      
+         }
       }
       catch (const char * e)
       {
@@ -443,7 +442,7 @@ void testRemove()
       }
       while (p = remove(p));
       cout << "The list is empty\n";
-         
+
 
    }
    catch (const char * e)

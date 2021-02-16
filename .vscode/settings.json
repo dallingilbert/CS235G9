@@ -12,6 +12,7 @@
         "ostream": "cpp",
         "sstream": "cpp",
         "streambuf": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "string": "cpp"
     }
 }

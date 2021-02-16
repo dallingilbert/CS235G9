@@ -1,23 +1,24 @@
 /***********************************************************************
  * Header:
- *    set
+ *    list
  * Summary:
- *    This class contains the notion of a set: a bucket to hold
+ *    This class contains the notion of a list: a bucket to hold
  *    data for the user. This is just a starting-point for more advanced
- *    constainers such as the set, set, set, set, set, and map
+ *    constainers such as the list, list, list, list, list, and map
  *    which we will build later this semester.
  *
  *    This will contain the class definition of:
- *       setue             : similar to std::set
+ *       listue             : similar to std::list
  * Author
  *    Br. Helfrich
  ************************************************************************/
 
-#ifndef SET_H
-#define SET_H
+#ifndef LIST_H
+#define LIST_H
 #include <iostream>
 #include <cstddef>
 #include <cassert> // because I am paranoid
+#include "node.h"
 
  // a little helper macro to write debug code
 #ifdef NDEBUG
@@ -31,21 +32,21 @@ namespace custom
 {
 
     /************************************************
-    * set
+    * list
     * A class that holds stuff
     ***********************************************/
     template <class T>
-    class set
+    class list
     {
     private:
         // member variables
-        T* data;
+        Node *pHead;
+        Node *pTail;
         int numElements;
-        int numCapacity;
 
         // setters
-        void setSize(int numElements) { this->numElements = numElements; }
-        void setCapacity(int numCapacity) { this->numCapacity = numCapacity; }
+        void listSize(int numElements) { this->numElements = numElements; }
+        void listCapacity(int numCapacity) { this->numCapacity = numCapacity; }
 
         // private member methods
         void resize(int newCap);
@@ -55,17 +56,17 @@ namespace custom
 
     public:
         // default constructor and non-default constructors
-        set()
+        list()
         {
-            setCapacity(0);
-            setSize(0);
+            listCapacity(0);
+            listSize(0);
             this->data = NULL;
         }
-        set(int numCapacity);
-        set(const set& rhs);
+        list(int numCapacity);
+        list(const list& rhs);
 
         // destructor
-        ~set()
+        ~list()
         {
              if (data != NULL)
               {
@@ -74,10 +75,7 @@ namespace custom
         }
 
         // overloaded operators
-        set& operator=(const set<T>& rhs);
-        set<T> operator && ( set<T>& rhs);
-        set<T> operator || ( set<T>& rhs);
-        set<T> operator - (set<T>& rhs);
+        list& operator=(const list<T>& rhs);
 
         // getters
         int size() const { return numElements; }
@@ -87,6 +85,18 @@ namespace custom
         bool empty() const { return size() == 0; }
         void clear();
         void insert(const T& t);
+        T& front();
+        const T& front() const;
+        T& back();
+        const T& back() const;
+
+        // push methods
+        void push_back(const T& t);
+        void push_front(const T& t);
+
+        // pop methods
+        void pop_back();
+        void pop_front();
         
         // the various iterator interfaces
         class iterator;
@@ -103,11 +113,11 @@ namespace custom
     };
 
     /**************************************************
-    * SET :: ITERATOR
-    * An iterator through a set
+    * list :: ITERATOR
+    * An iterator through a list
     *************************************************/
     template <class T>
-    class set<T>::iterator
+    class list<T>::iterator
     {
     public:
         // constructors, destructors, and assignment operator
@@ -148,11 +158,11 @@ namespace custom
     };
 
     /**************************************************
-    * SET :: CONST_ITERATOR
+    * list :: CONST_ITERATOR
     * An iterator through array
     *************************************************/
     template <class T>
-    class set<T>::const_iterator
+    class list<T>::const_iterator
     {
     public:
         // constructors, destructors, and assignment operator
@@ -193,54 +203,54 @@ namespace custom
     };
 
     /********************************************
-    * SET :: BEGIN
+    * list :: BEGIN
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
     template <class T>
-    typename set<T>::iterator set<T>::begin()
+    typename list<T>::iterator list<T>::begin()
     {
         return iterator(data);
     }
 
     /********************************************
-    * SET :: END
+    * list :: END
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
     template <class T>
-    typename set<T>::iterator set<T>::end()
+    typename list<T>::iterator list<T>::end()
     {
         return iterator(data + numElements);
     }
 
     /********************************************
-    * SET :: CBEGIN
+    * list :: CBEGIN
     * Returns the beginning of our array
     ********************************************/
     template <class T>
-    typename set<T>::const_iterator set<T>::Cbegin() const
+    typename list<T>::const_iterator list<T>::Cbegin() const
     {
         return const_iterator(data);
     }
 
     /********************************************
-    * SET :: CEND
+    * list :: CEND
     * Returns the end of our array
     ********************************************/
     template <class T>
-    typename set<T>::const_iterator set<T>::Cend() const
+    typename list<T>::const_iterator list<T>::Cend() const
     {
         return const_iterator(data + numElements);
     }
 
     /*******************************************
-     * SET :: RESIZE
+     * list :: RESIZE
      * Dynamically allocates new space for the 
-     * additional items created for our set
+     * additional items created for our list
      *******************************************/
     template <class T>
-    void set<T>::resize(int newCap)
+    void list<T>::resize(int newCap)
     {
         try
         {
@@ -252,21 +262,21 @@ namespace custom
 
             delete[] data; // clear memory
             this-> data = temp;
-            setCapacity(newCap); // increase capacity
+            listCapacity(newCap); // increase capacity
         }
         catch (std::bad_alloc)
         {
-            throw "ERROR: Unable to allocate buffer a new buffer for set";
+            throw "ERROR: Unable to allocate buffer a new buffer for list";
         }
     };
 
     /********************************************
-   * SET :: ERASE
+   * list :: ERASE
    * Note that you have to use "typename" before
    * the return value type
    ********************************************/
     template <class T>
-    void set<T>::erase(set<T>::iterator& it)
+    void list<T>::erase(list<T>::iterator& it)
     {
         int Eraser = findIndex(*it);
         if (data[Eraser] == *it)
@@ -279,13 +289,13 @@ namespace custom
     }
 
     /**********************************************
-     * SET : FIND
+     * list : FIND
      * Determines if a value is found within our 
-     * set, if it is not found, return the end
+     * list, if it is not found, return the end
      * iterator
      **********************************************/
     template <class T>
-    typename set<T>::iterator set<T>::find(const T& t)
+    typename list<T>::iterator list<T>::find(const T& t)
     {
         int index = findIndex(t);
         if (data[index] == t)
@@ -296,25 +306,96 @@ namespace custom
     }
 
     /********************************************
-     * SET :: Clear
-     * Empty our set and reset the size and
+     * list :: Clear
+     * Empty our list and relist the size and
      * capacity
      ********************************************/
     template <class T>
-    void set<T>::clear()
+    void list<T>::clear()
     {
-        setSize(0);
-        setCapacity(0);
+        listSize(0);
+        listCapacity(0);
         data = NULL;
     };
 
+    /********************************************
+    * list :: Push Back
+    * Note that you have to use "typename" before
+    * the return value type
+    ********************************************/
+    template <class T>
+    void list <T> ::push_back(const T& t)
+    {
+        if (capacity() == 0)
+        {
+            resize(1);
+        }
+        else if (size() == capacity())
+        {
+            resize(capacity() * 2);
+        }
+        setBack(getBack() + 1);
+        data[iBackNormalized()] = t;
+        //cerr << iBackNormalized() <<"back" << endl;
+    };
+
+    /********************************************
+    * list :: Push Front
+    * Note that you have to use "typename" before
+    * the return value type
+    ********************************************/
+    template <class T>
+    void list <T> ::push_front(const T& t)
+    {
+        if (capacity() == 0)
+        {
+            resize(1);
+        }
+        else if (size() == capacity())
+        {
+            resize(capacity() * 2);
+        }
+
+        setFront((getFront() - 1));
+        data[iFrontNormalized()] = t;
+        //cerr << iFrontNormalized()<< "front"<< endl;
+    };
+
+    /********************************************
+     * list :: Pop Back
+     * Note that you have to use "typename" before
+     * the return value type
+     ********************************************/
+    template <class T>
+    void list <T> ::pop_back()
+    {
+        if (!empty())
+            setBack(getBack() - 1);
+        else
+            cout << "";
+    };
+
+    /********************************************
+     * list :: Pop Front
+     * Note that you have to use "typename" before
+     * the return value type
+     ********************************************/
+    template <class T>
+    void list <T> ::pop_front()
+    {
+        if (!empty())
+            setFront(getFront() + 1);
+        else
+            cout << "";
+    };
+
     /*******************************************
-     * SET :: Assignment operator
+     * list :: Assignment operator
      * Copies the data from one object to the
      * other
      *******************************************/
     template <class T>
-    set<T>& set<T>::operator=(const set<T>& rhs)
+    list<T>& list<T>::operator=(const list<T>& rhs)
     {
         if (numCapacity < rhs.numCapacity)
         {
@@ -325,13 +406,13 @@ namespace custom
         {
             try
             {
-                setSize(rhs.size());
-                setCapacity(rhs.capacity());
+                listSize(rhs.size());
+                listCapacity(rhs.capacity());
                 data = new T[numCapacity];
             }
             catch (std::bad_alloc)
             {
-                throw "ERROR: Unable to allocate buffer a new buffer for set";
+                throw "ERROR: Unable to allocate buffer a new buffer for list";
             }
         }
         for (int i = 0; i < rhs.numElements; i++)
@@ -343,141 +424,38 @@ namespace custom
     }
 
     /*******************************************
-     * SET :: INTERSECT
-     * Determine where values between two sets 
-     * are intersecting
-     *******************************************/
-    template <class T>
-    set<T> set<T>::operator && ( set<T>& rhs)
-    {
-        // initialize all member variables
-        set<T> returnSet;
-        int LHS = 0;
-        int RHS = 0;
-        
-        while (LHS < size() && RHS < rhs.size())
-        {
-            if (data[LHS] == rhs.data[RHS])
-            {
-                returnSet.addToEnd(data[LHS]);
-                LHS++, RHS++;
-            }
-            else if (data[LHS] < rhs.data[RHS])
-                LHS++;
-            else
-                RHS++;
-        }
-        return returnSet;
-    }
-
-    /*******************************************
-     * SET :: UNION operator
-     * Determines where values between two sets
-     * 
-     *******************************************/
-    template <class T>
-    set<T> set<T>::operator || ( set<T>& rhs)
-    {
-        // initialize all member variables
-        set<T> returnSet;
-        int LHS = 0;
-        int RHS = 0;
-        
-        while (LHS < size() || RHS < rhs.size())
-        {
-            if (LHS == size())
-                returnSet.addToEnd(rhs.data[RHS++]);
-            else if (RHS == rhs.size())
-                returnSet.addToEnd(data[LHS++]);
-            else if (data[LHS] == rhs.data[RHS])
-            {
-                returnSet.addToEnd(data[LHS++]);
-                LHS++, RHS++;
-            }
-            else if (data[LHS] < rhs.data[RHS])
-                returnSet.addToEnd(data[LHS++]);
-            else
-                returnSet.addToEnd(rhs.data[RHS++]);
-        }
-        return returnSet;
-    }
-
-    /*******************************************
-     * SET :: DIFFERENCE operator
-     *******************************************/
-    template <class T>
-    set<T> set<T>::operator - (set<T>& rhs)
-    {
-        // initialize all member variables
-        set<T> returnSet;
-        int LHS = 0;
-        int RHS = 0;
-        
-        while (LHS < size() || RHS < rhs.size())
-        {
-            if (LHS == size())
-                RHS++;
-            else if (RHS == rhs.size())
-                returnSet.addToEnd(data[LHS++]);
-            else if (data[LHS] == rhs.data[RHS])
-                LHS++, RHS++;
-            else if (data[LHS] < rhs.data[RHS])
-                returnSet.addToEnd(data[LHS++]);
-            else
-                RHS++;
-        }
-        return returnSet;
-    }
-
-    /*******************************************
-     * SET :: ADDTOEND
-     * Adds the passed in parameter to the end 
-     * of our set
-     *******************************************/
-    template <class T>
-    void set<T>::addToEnd(const T& t)
-    {
-        if (numCapacity == 0)
-            resize(1);
-        if (numElements == numCapacity)
-            resize(numCapacity * 2);
-            
-        data[numElements++] = t;
-    }
-
-    /*******************************************
-     * SET :: COPY CONSTRUCTOR
+     * list :: COPY CONSTRUCTOR
      * Copies all of the data using the assignment
      * operator
      *******************************************/
     template <class T>
-    set<T>::set(const set<T>& rhs)
+    list<T>::list(const list<T>& rhs)
     {
         this->data = NULL;
-        setSize(0);
-        setCapacity(0);
+        listSize(0);
+        listCapacity(0);
 
         *this = rhs;
     }
 
     /**********************************************
-     * SET : NON-DEFAULT CONSTRUCTOR
+     * list : NON-DEFAULT CONSTRUCTOR
      * Preallocate the array to "capacity"
      **********************************************/
     template <class T>
-    set<T>::set(int numCapacity)
+    list<T>::list(int numCapacity)
     {
         assert(numCapacity >= 0);
         this->data = NULL;
 
-        setCapacity(numCapacity);
+        listCapacity(numCapacity);
         
         // do nothing if there is nothing to do.
         // since we can't grow an array, this is kinda pointless
         if (numCapacity == 0)
         {
             cerr << "numCapacity is 0 -----" << endl;
-            set();
+            list();
             return;
         }
 
@@ -493,16 +471,16 @@ namespace custom
         }
 
         // copy over the stuff
-        setSize(0);
+        listSize(0);
     }
 
     /********************************************
-    * SET :: INSERT
-    * Inserts the passed in value into our set
+    * list :: INSERT
+    * Inserts the passed in value into our list
     * at a specified index
     ********************************************/
     template <class T>
-    void set<T>::insert(const T& t)
+    void list<T>::insert(const T& t)
     {
 
         if (numCapacity == 0)
@@ -520,7 +498,7 @@ namespace custom
                 }
                 catch (std::bad_alloc)
                 {
-                        throw "ERROR: Unable to allocate buffer a new buffer for set";
+                        throw "ERROR: Unable to allocate buffer a new buffer for list";
                 }
             }
             data[0] = t;
@@ -542,12 +520,12 @@ namespace custom
     };
 
     /**********************************************
-     * SET : FIND INDEX
+     * list : FIND INDEX
      * Finds the index of a certain value within 
-     * our set
+     * our list
      **********************************************/
     template <class T>
-    int set<T>::findIndex(const T& t) const
+    int list<T>::findIndex(const T& t) const
     {
         int begin = 0;
         int end = size() - 1;
@@ -564,5 +542,61 @@ namespace custom
         }
         return begin;
     }
+
+    /**********************************************
+     * list : FRONT
+     * Access the oldest value from the list by
+     * reference
+     **********************************************/
+    template <class T>
+    T& list <T> ::front()
+    {
+        if (empty())
+            throw "ERROR: attempting to access an element in an empty list";
+        else
+            return data[iHead()];
+    }
+
+    /**********************************************
+     * list : FRONT
+     * Access the oldest value from the list by
+     * const
+     **********************************************/
+    template <class T>
+    const T& list <T> ::front() const
+    {
+        if (empty())
+            throw "ERROR: attempting to access an element in an empty list";
+        else
+            return data[iHead()];
+    }
+    
+    /**********************************************
+     * list : BACK
+     * Access the oldest value from the list by 
+     * reference
+     **********************************************/
+    template <class T>
+    T& list <T> :: back()
+    {
+        if (empty())
+            throw "ERROR: attempting to access an element in an empty list";
+        else 
+            return data[iTail()];
+    }
+
+    /**********************************************
+     * list : BACK
+     * Access the oldest value from the list by 
+     * const
+     **********************************************/
+    template <class T>
+    const T& list <T> :: back() const
+    {
+        if (empty())
+            throw "ERROR: attempting to access an element in an empty list";
+        else 
+            return data[iTail()];
+    }
 };     // namespace custom
-#endif // SET_H
+#endif // LIST_H
