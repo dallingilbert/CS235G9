@@ -13,6 +13,10 @@
         "sstream": "cpp",
         "streambuf": "cpp",
         "xiosbase": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "iomanip": "cpp",
+        "iterator": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp"
     }
 }
