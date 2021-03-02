@@ -43,8 +43,7 @@ namespace custom
         Node<T>* pHead;
         Node<T>* pTail;
         int numElements;
-        // setters
-        // private member methods
+
     public:
         // default constructor and non-default constructors
         list()
@@ -454,13 +453,13 @@ namespace custom
             pNew->pPrev = pTail;
             pNew->pNext = NULL;
 
-
             //point tail to pNew
             pTail->pNext = pNew;
             numElements++;
             pTail = pNew;
             return iterator(pNew);
         }
+
         //create new node
         Node<T>* pNew = new Node<T>(t);
         if (pHead == NULL && pTail == NULL)
@@ -470,7 +469,6 @@ namespace custom
             numElements++;
             return iterator(pNew);
         }
-
         //point new node to prev and next nodes
         pNew->pNext = it.data;
         pNew->pPrev = it.data->pPrev;
@@ -485,7 +483,7 @@ namespace custom
             pHead = pNew;
         else if (pNew->pNext == NULL)
             pTail = pNew;
-
+            
         numElements++;
         return iterator(pNew);
     };
