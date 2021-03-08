@@ -19,7 +19,7 @@
 #include <cstddef>
 #include <cassert> // because I am paranoid
 
-// a little helper macro to write debug code
+ // a little helper macro to write debug code
 #ifdef NDEBUG
 #define Debug(statement)
 #else
@@ -29,629 +29,686 @@ using namespace std;
 
 namespace custom
 {
+template <class T>
+class BST
+{
+public:
+   class BNode;
+   class iterator;
+   class reverse_iterator;
+   BST()
+   {
+       root = NULL;
+       numElements = 0;
+   }
 
-    /************************************************
-    * BST
-    * A class that holds stuff
-    ***********************************************/
-    template <typename T>
-    class BST
+   BST(const BST& rhs)
+   {
+       copyBinaryTree(rhs.root, root);
+       numElements = rhs.numElements;
+   }
+
+   ~BST()
+   {
+       deleteBinaryTree(root);
+   }
+
+   BST& operator = (const BST& rhs);
+   int size();
+   bool empty();
+   void clear();
+   void insert(T  t);
+   void erase(iterator& it);
+   iterator find(T t);
+   iterator begin();
+   iterator end();
+   iterator Rbegin();
+   iterator Rend();
+   BNode* getRoot();
+
+private:
+    BNode* root;
+    int numElements;
+    void deleteNode(BNode* del, bool right);
+    void deleteBinaryTree(BNode* del);
+    void copyBinaryTree(BNode* src, BNode* &dest);
+    int sizeRecursive(BNode* rec);
+};
+
+template <class T>
+class BST<T>::BNode
+{
+public:
+   T data;
+   BNode* pLeft;
+   BNode* pRight;
+   BNode* pParent;
+   bool isRed;
+
+   BNode()
+   {
+      data = T();
+      pLeft = NULL;
+      pRight = NULL;
+      pParent = NULL;
+      isRed = true;
+   }
+
+   BNode(T data)
+   {
+      this->data = data;
+      pLeft = NULL;
+      pRight = NULL;
+      pParent = NULL;
+      isRed = true;
+   }
+
+   BNode(const BNode& rhs)
+   {
+       data = rhs.data;
+       pRight = rhs.pRight;
+       pLeft = rhs.pLeft;
+       pParent = rhs.pParent;
+       isRed = rhs.isRed;
+   };
+   //assignment operator
+   BNode& operator = (const BNode& rhs)
+   {
+       data = rhs.data;
+       pRight = rhs.pRight;
+       pLeft = rhs.pLeft;
+       pParent = rhs.pParent;
+       isRed = rhs.isRed;
+       return *this;
+   }
+   void addLeft(BNode* pNode, BNode* pAdd);
+   void addRight(BNode* pNode, BNode* pAdd);
+private:
+   void verifyRB(int depth)
+   {
+
+   }
+   void verifyBST()
+   {
+
+   }
+   void balance()
+   {
+
+   }
+
+};
+
+template <class T>
+class BST<T>::iterator
+{
+private:
+    typename BST<T>::BNode* p;
+public:
+   // constructors, destructors, and assignment operator
+   iterator() : p(NULL) {};
+   iterator(BNode* p) : p(p) {};
+
+   iterator(const iterator & rhs)
+   {
+       if (NULL != rhs.p)
+           p = rhs.p;
+       else
+           //if the iterator is null just set everything to null
+           p = NULL;
+   }
+   iterator & operator = (const iterator & rhs)
+   {
+       this->p = rhs.p;
+       return *this;
+   }
+
+   // equals, not equals operator
+   bool operator != (const iterator & rhs) const { return rhs.p != this->p; }
+
+   bool operator == (const iterator & rhs) const { return rhs.p == this->p; }
+
+
+   // dereference operator
+   T& operator*() { return p->data; }
+   const T& operator * () const { return p->data; }
+
+   // prefix increment
+   iterator& operator ++ ()
+   {
+       if (p)
+       {
+           if (NULL != p->pRight)
+           {
+               // go right
+               p = p->pRight;
+
+               // jig left - there might be more left-most children
+               while (p->pLeft)
+                   p = p->pLeft;
+               return *this;
+           }
+           // there are no right children, the left are done
+           assert(NULL == p->pRight);
+           BNode* pSave = p;
+
+           // go up
+           p = p->pParent;
+
+           // if the parent is the NULL, we are done!
+           if (NULL == p)
+               return *this;
+
+           // if we are the left-child, got to the parent.
+           if (pSave == p->pLeft)
+               return *this;
+
+           // we are the right-child, go up as long as we are the right child!
+           while (NULL != p && pSave == p->pRight)
+           {
+               pSave = p;
+               p = p->pParent;
+           }
+           return *this;
+       }
+       else
+       {
+           return *this;
+       }
+   }
+
+   // postfix increment
+   iterator operator ++ (int postfix)
+   {
+       BNode* tmp = p;
+       if (p)
+       {
+           // if there is a right node, take it
+           if (NULL != p->pRight)
+           {
+               // go right
+               p = p->pRight;
+
+               // jig left - there might be more left-most children
+               while (p->pLeft)
+                   p = p->pLeft;
+               return iterator(tmp);
+           }
+
+           // there are no right children, the left are done
+           assert(NULL == p->pRight);
+           BNode* pSave = p;
+
+           // go up
+           p = p->pParent;
+
+           // if the parent is the NULL, we are done!
+           if (NULL == p)
+               return iterator(tmp);
+
+           // if we are the left-child, got to the parent.
+           if (pSave == p->pLeft)
+               return iterator(tmp);
+
+           // we are the right-child, go up as long as we are the right child!
+           while (NULL != p && pSave == p->pRight)
+           {
+               pSave = p;
+               p = p->pParent;
+           }
+           return iterator(tmp);
+      }
+       else
+           iterator(tmp);
+   }
+
+   // prefix decrement
+   iterator & operator -- ()
+   {
+       if (p)
+       {
+           // if there is a left node, take it
+           if (NULL != p->pLeft)
+           {
+               // go left
+               p = p->pLeft;
+
+               // jig right - there might be more right-most children
+               while (p->pRight)
+                   p = p->pRight;
+               return *this;
+           }
+           // there are no left children, the right are done
+           assert(NULL == p->pLeft);
+           BNode* pSave = p;
+
+           // go up
+           p = p->pParent;
+
+           // if the parent is the NULL, we are done!
+           if (NULL == p)
+               return *this;
+
+           // if we are the right-child, got to the parent.
+           if (pSave == p->pRight)
+               return *this;
+
+           // we are the left-child, go up as long as we are the left child!
+           while (NULL != p && pSave == p->pLeft)
+           {
+               pSave = p;
+               p = p->pParent;
+           }
+           return *this;
+       }
+       else
+           return *this;
+   }
+
+   // postfix decrement
+   iterator operator -- (int postfix)
+   {
+       BNode* tmp = p;
+       if (p)
+       {
+           if (NULL != p->pLeft)
+           {
+               // go left
+               p = p->pLeft;
+
+               // jig right - there might be more right-most children
+               while (p->pRight)
+                   p = p->pRight;
+               return iterator(tmp);
+           }
+
+           // there are no left children, the right are done
+           assert(NULL == p->pLeft);
+           BNode* pSave = p;
+
+           // go up
+           p = p->pParent;
+
+           // if the parent is the NULL, we are done!
+           if (NULL == p)
+               return iterator(tmp);
+
+           // if we are the right-child, got to the parent.
+           if (pSave == p->pRight)
+               return iterator(tmp);
+
+           // we are the left-child, go up as long as we are the left child!
+           while (NULL != p && pSave == p->pLeft)
+           {
+               pSave = p;
+               p = p->pParent;
+           }
+           return iterator(tmp);
+       }
+       else
+           iterator(tmp);
+   }
+   friend void BST<T>::erase(BST<T>::iterator& it);
+   friend void BST<T>::insert(const T t);
+};
+
+/*****************************************************
+ * ADD LEFT
+ * Add a node to the left of our parent node using a
+ * passed in node
+ ****************************************************/
+template <class T>
+void BST<T>::BNode::addLeft(BNode* pNode, BNode* pAdd)
+{
+    // set the parent node
+    try
     {
-    private:
-        class BNode
-        {
-        public:
-            // member variables
-            T data;
-            BNode *pLeft;
-            BNode *pRight;
-            BNode *pParent;
-            bool isRed;
+        if (pAdd != NULL)
+            pAdd->pParent = pNode;
 
-            // default constructor
-            BNode()
-            {
-                this->pParent = NULL;
-                this->pNext = NULL;
-                this->pPrev = NULL;
-                data = T();
-                isRed = false;
-            }
-
-            // non-default constructor
-            BNode(const T &t)
-            {
-                this->pLeft = NULL;
-                this->pRight = NULL;
-                this->pParent = NULL;
-                data = t;
-                isRed = false;
-            }
-
-        private:
-            // private member methods
-            void verifyRB(int depth);
-            void verifyBST();
-            void balance();
-        };
-
-        // private member variables BST
-        BNode *root;
-        int numElements;
-
-        // private member methods BST
-        void deleteNode(BNode *del, bool right);
-        void deleteBinaryTree(BNode *del);
-        void copyBinaryTree(BNode *src, BNode *dest);
-
-    public:
-        // default constructor and non-default constructors
-        BST()
-        {
-            root = NULL;
-            numElements = 0;
-        }
-
-        // copy constructor
-        BST(BST<T> &rhs);
-
-        // destructor
-        ~BST()
-        {
-            if (root != NULL)
-            {
-                delete root;
-            }
-        }
-
-        // overloaded operators
-        BST &operator=(BST<T> &rhs);
-
-        // getters
-        int size() const { return numElements; }
-
-        // public member methods
-        bool empty() const { return size() == 0; }
-        void clear();
-
-        // the various iterator interfaces
-        class iterator;
-        iterator find(const T &t);
-        iterator erase(const iterator &it);
-        iterator insert(const T &t);
-        iterator begin();
-        iterator end();
-
-        class const_iterator;
-        const_iterator Cbegin();
-        const_iterator Cend();
-
-        class reverse_iterator;
-        reverse_iterator Rbegin();
-        reverse_iterator Rend();
-
-        class const_reverse_iterator;
-        const_reverse_iterator CRbegin();
-        const_reverse_iterator CRend();
-    };
-
-    /**************************************************
-    * BST :: ITERATOR
-    * An iterator through a BST
-    *************************************************/
-    template <class T>
-    class BST<T>::iterator
+        // set pLeft of node
+        pNode->pLeft = pAdd;
+     }
+    catch (std::bad_alloc)
     {
-    private:
-        typename BST<T>::BNode *p;
+        throw ("ERROR: Unable to allocate a node");
+    }
+    return;
+}
 
-    public:
-        // constructors, destructors, and assignment operator
-        iterator() : p(NULL) {}
-        iterator(typename BST<T>::BNode *temp) : p(temp) {} //: data(*data) {}
-        iterator(const iterator &rhs) { *this = rhs; }
-        iterator &operator=(const iterator &rhs)
-        {
-            this->p = rhs.p;
-            return *this;
-        }
-
-        friend iterator BST<T>::insert(const T &t);
-        friend iterator BST<T>::erase(const iterator &it);
-        friend iterator BST<T>::begin();
-
-        // equals, not equals operator
-        bool operator!=(const iterator &rhs) const { return rhs.p != this->p; }
-        bool operator==(const iterator &rhs) const { return rhs.p == this->p; }
-
-        // dereference operator
-        T &operator*() { return p->data; }
-        const T &operator*() const { return p->data; }
-
-        // prefix increment
-        iterator &operator++()
-        {
-            if (p)
-                p = p->pNext;
-            return *this;
-        }
-
-        // postfix increment
-        iterator operator++(int postfix)
-        {
-            iterator tmp(p);
-            if (p)
-                p = p->pNext;
-            return tmp;
-        }
-        // prefix increment
-        iterator &operator--()
-        {
-            p = p->pPrev;
-            iterator tmp(p);
-            return tmp;
-        }
-
-        // postfix increment
-        iterator operator--(int prefix)
-        {
-            iterator tmp(p);
-            tmp = tmp.p->pPrev;
-            return tmp;
-        }
-    };
-
-    /**************************************************
-    * BST :: const_iterator
-    * An iterator through a BST
-    *************************************************/
-    template <class T>
-    class BST<T>::const_iterator
+/*****************************************************
+ * ADD RIGHT
+ * Add a node to the right of our parent node using a
+ * passed in node
+ ****************************************************/
+template <class T>
+void BST<T>::BNode::addRight(BNode* pNode, BNode* pAdd)
+{
+    try
     {
-    private:
-        typename BST<T>::BNode *p;
-
-    public:
-        // constructors, destructors, and assignment operator
-        const_iterator() : p(NULL) {}
-        const_iterator(typename BST<T>::BNode *temp) : p(temp) {} //: data(*data) {}
-        const_iterator(const iterator &rhs) { *this = rhs; }
-        const_iterator &operator=(const iterator &rhs)
-        {
-            this->p = rhs.p;
-            return *this;
-        }
-
-        friend const_iterator BST<T>::insert(const const_iterator &it, const T &t);
-        friend const_iterator BST<T>::erase(const const_iterator &it);
-        // equals, not equals operator
-        bool operator!=(const const_iterator &rhs) const { return rhs.p != this->p; }
-        bool operator==(const const_iterator &rhs) const { return rhs.p == this->p; }
-
-        // dereference operator
-        const T &operator*() { return p->data; }
-        const T &operator*() const { return p->data; }
-
-        // prefix increment
-        const_iterator &operator++()
-        {
-            if (p)
-                p = p->pNext;
-            return *this;
-        }
-
-        // postfix increment
-        const_iterator operator++(int postfix)
-        {
-            const_iterator tmp(*this);
-            if (p)
-                p = p->pNext;
-            return tmp;
-        }
-        // prefix increment
-        const_iterator &operator--()
-        {
-            p = p->pPrev;
-            const_iterator tmp(p);
-            return tmp;
-        }
-
-        // postfix increment
-        const_iterator operator--(int prefix)
-        {
-            const_iterator tmp(*this);
-            tmp = tmp.p->pPrev;
-            return tmp;
-        }
-    };
-
-    /**************************************************
-    * BST :: reverse_iterator
-    * An iterator through array
-    *************************************************/
-    template <class T>
-    class BST<T>::reverse_iterator
+        if (pAdd != NULL)
+            pAdd->pParent = pNode;
+        pNode->pRight = pAdd;
+    }
+    catch (std::bad_alloc)
     {
-    private:
-        typename BST<T>::BNode *p;
+        throw ("ERROR: Unable to allocate a node");
+    }
+    return;
+}
 
-    public:
-        // constructors, destructors, and assignment operator
-        reverse_iterator() : p(NULL) {}
-        reverse_iterator(typename BST<T>::BNode *temp) : p(temp) {}
-        reverse_iterator(const reverse_iterator &rhs) { *this = rhs; }
-        reverse_iterator &operator=(const reverse_iterator &rhs)
-        {
-            this->p = rhs.p;
-            return *this;
-        }
-
-        // equals, not equals operator
-        bool operator!=(const reverse_iterator &rhs) const { return rhs.p != this->p; }
-        bool operator==(const reverse_iterator &rhs) const { return rhs.p == this->p; }
-
-        // dereference operator
-        T &operator*() { return p->data; }
-        const T &operator*() const { return p->data; }
-
-        // prefix increment
-        reverse_iterator &operator++()
-        {
-            if (p)
-                p = p->pPrev;
-            return *this;
-        }
-
-        // postfix increment
-        reverse_iterator operator++(int postfix)
-        {
-            reverse_iterator tmp(*this);
-            if (p)
-                p = p->pPrev;
-            return tmp;
-        }
-        // prefix increment
-        reverse_iterator &operator--()
-        {
-            p = p->pNext;
-            reverse_iterator tmp(p);
-            return tmp;
-        }
-
-        // postfix increment
-        reverse_iterator operator--(int prefix)
-        {
-            p = p->pNext;
-            reverse_iterator tmp(*this);
-            return tmp;
-        }
-    };
-
-    /**************************************************
-    * BST :: const_reverse_iterator
-    * An iterator through array
-    *************************************************/
-    template <class T>
-    class BST<T>::const_reverse_iterator
+template <class T>
+BST<T> & BST<T>::operator = (const BST & rhs)
+{
+    if (root != NULL)
+        deleteBinaryTree(root);
+    if (rhs.root != NULL)
     {
-    private:
-        typename BST<T>::BNode *p;
+        root = new BNode(rhs.root->data);
+        copyBinaryTree(rhs.root, root);
+        numElements = rhs.numElements;
+    }
+    return *this;
+}
 
-    public:
-        // constructors, destructors, and assignment operator
-        const_reverse_iterator() : p(NULL) {}
-        const_reverse_iterator(typename BST<T>::BNode *temp) : p(temp) {}
-        const_reverse_iterator(const const_reverse_iterator &rhs) { *this = rhs; }
-        const_reverse_iterator &operator=(const const_reverse_iterator &rhs)
-        {
-            this->p = rhs.p;
-            return *this;
-        }
+template <class T>
+int BST<T>::size()
+{
+    return sizeRecursive(root);
+}
 
-        // equals, not equals operator
-        bool operator!=(const const_reverse_iterator &rhs) const { return rhs.p != this->p; }
-        bool operator==(const const_reverse_iterator &rhs) const { return rhs.p == this->p; }
+template <class T>
+bool BST<T>::empty()
+{
+   return size() == 0;
+}
 
-        // dereference operator
-        const T &operator*() { return p->data; }
-        const T &operator*() const { return p->data; }
+template <class T>
+void BST<T>::clear()
+{
+    if (root != NULL)
+     deleteBinaryTree(root);
+    root = NULL;
+    numElements = 0;
+}
 
-        // prefix increment
-        const_reverse_iterator &operator++()
-        {
-            if (p)
-                p = p->pPrev;
-            return *this;
-        }
-
-        // postfix increment
-        const_reverse_iterator operator++(int postfix)
-        {
-            const_reverse_iterator tmp(*this);
-            if (p)
-                p = p->pPrev;
-            return tmp;
-        }
-        // prefix increment
-        const_reverse_iterator &operator--()
-        {
-            p = p->pNext;
-            const_reverse_iterator tmp(p);
-            return tmp;
-        }
-
-        // postfix increment
-        const_reverse_iterator operator--(int prefix)
-        {
-            const_reverse_iterator tmp(*this);
-            tmp = tmp.p->pPrev;
-            return tmp;
-        }
-    };
-
-    /********************************************
-    * BST :: BEGIN
-    * Note that you have to use "typename" before
-    * the return value type
-    ********************************************/
-    template <class T>
-    typename BST<T>::iterator BST<T>::begin()
+template <class T>
+void BST<T>::insert(T t)
+{
+    BNode* pNode = new BNode(t);
+    BNode* key = new BNode();
+    //if its the root
+    if (size() == 0)
     {
-        return iterator();
+        root = pNode;
+        numElements++;
+       //pNode->balance(pNode);
+        return;
+    }
+    //search where to insert the node
+    for (iterator it = begin(); it != end(); ++it)
+    {
+        if (*it < pNode->data)
+        {
+            key = it.p;
+            continue;
+        }
+        else if (*it > pNode->data)
+        {
+            key = it.p;
+            break;
+        }
+        //TODO case if equals to the last element
+        else if (*it == pNode->data)
+        {
+            ++it;
+            key = it.p;
+            break;
+        }
     }
 
-    /********************************************
-    * BST :: END
-    * Note that you have to use "typename" before
-    * the return value type
-    ********************************************/
-    template <class T>
-    typename BST<T>::iterator BST<T>::end()
+    //case 1 if the element was bigger tha all the nodes
+    if (key->data < pNode->data)
     {
-        return iterator(NULL);
+        //insert at the end & furthest right
+        key->addRight(key, pNode);
     }
-
-    /********************************************
-    * BST :: CBEGIN
-    * Note that you have to use "typename" before
-    * the return value type
-    ********************************************/
-    template <class T>
-    typename BST<T>::const_iterator BST<T>::Cbegin()
+    else
     {
-        return const_iterator(p.pParent);
+        //insert to the left of the key
+        if (!key->pLeft && !key->pRight)
+            key->addLeft(key, pNode);
+        //insert to the right of the left element of the key
+        else if (key->pLeft && key->pLeft->pRight)
+        {
+            key = key->pLeft;
+            while (key->pRight)
+                key = key->pRight;
+            pNode->addRight(key, pNode);
+        }
+        else if (key->pLeft && !key->pLeft->pRight)
+            pNode->addRight(key->pLeft, pNode);
+        else if (!key->pLeft)
+            pNode->addLeft(key, pNode);
     }
+    numElements++;
+   // pNode->balance(pNode);
+}
 
-    /********************************************
-    * BST :: CEND
-    * Note that you have to use "typename" before
-    * the return value type
-    ********************************************/
-    template <class T>
-    typename BST<T>::const_iterator BST<T>::Cend()
+template <class T>
+void BST<T>::erase(iterator& it)
+{
+    //case 1 no children
+    if (it.p->pRight == NULL && it.p->pLeft == NULL)
     {
-        return const_iterator(NULL);
+        if (it.p->pParent != NULL && it.p->pParent->pRight == it.p)
+            it.p->pParent->pRight = NULL;
+        if (it.p->pParent != NULL && it.p->pParent->pLeft == it.p)
+            it.p->pParent->pLeft = NULL;
+        delete it.p;
+        return;
     }
-
-    /********************************************
-    * BST :: RBEGIN
-    * Returns the beginning of our array
-    ********************************************/
-    template <class T>
-    typename BST<T>::reverse_iterator BST<T>::Rbegin()
+    // case 2 one child
+    if (it.p->pRight == NULL && it.p->pLeft != NULL)
     {
-        return reverse_iterator(pTail);
+        it.p->pLeft->pParent = it.p->pParent;
+        if (it.p->pParent != NULL && it.p->pParent->pRight == it.p)
+            it.p->pParent->pRight = it.p->pLeft;
+        if (it.p->pParent != NULL && it.p->pParent->pLeft == it.p)
+            it.p->pParent->pLeft = it.p->pLeft;
+        delete it.p;
     }
-
-    /********************************************
-    * BST :: REND
-    * Returns the end of our array
-    ********************************************/
-    template <class T>
-    typename BST<T>::reverse_iterator BST<T>::Rend()
+    else if (it.p->pRight != NULL && it.p->pLeft == NULL)
     {
-        return reverse_iterator(NULL);
+        it.p->pRight->pParent = it.p->pParent;
+        if (it.p->pParent != NULL && it.p->pParent->pRight == it.p)
+            it.p->pParent->pRight = it.p->pRight;
+        if (it.p->pParent != NULL && it.p->pParent->pLeft == it.p)
+            it.p->pParent->pLeft = it.p->pRight;
+        delete it.p;
     }
-
-    /********************************************
-    * BST :: CRBEGIN
-    * Returns the beginning of our array
-    ********************************************/
-    template <class T>
-    typename BST<T>::const_reverse_iterator BST<T>::CRbegin()
+    //case 3 two children
+    if (it.p->pLeft != NULL && it.p->pRight != NULL)
     {
-        return const_reverse_iterator(pTail);
-    }
+        while (it.p->pLeft != NULL)
+            it.p = it.p->pLeft;
 
-    /********************************************
-    * BST :: CREND
-    * Returns the end of our array
-    ********************************************/
-    template <class T>
-    typename BST<T>::const_reverse_iterator BST<T>::CRend()
-    {
-        return const_reverse_iterator(NULL);
-    }
 
-    /********************************************
-   * BST :: ERASE
-   * Note that you have to use "typename" before
-   * the return value type
-   ********************************************/
-    template <class T>
-    typename BST<T>::iterator BST<T>::erase(const iterator &it)
-    {
-        if (it.p == NULL)
-            return iterator(NULL);
-
-        if (it.p->pPrev != NULL)
-            it.p->pPrev->pNext = it.p->pNext;
-
-        if (it.p->pNext != NULL)
-            it.p->pNext->pPrev = it.p->pPrev;
-
-        if (pHead == it.p)
-            pHead = it.p->pNext;
-
-        if (pTail == it.p)
-            pTail = it.p->pPrev;
-
-        typename BST<T>::BNode *temp;
-
-        if (it.p->pPrev != NULL)
-            temp = it.p->pPrev;
-        else
-            temp = it.p->pNext;
+        ////point the left node to the right node as parent
+        //it.p->pLeft->pParent = it.p->pRight;
+        ////point the right node to the parent of it
+        //it.p->pRight->pParent = it.p->pParent;
+        ////point the parent of it the right node either to the left or right of it
+        //if (it.p->pParent->pLeft == it.p)
+        //    it.p->pParent->pLeft = it.p->pRight;
+        //else
+        //    it.p->pParent->pRight = it.p->pRight;
+        ////point the right to the left as a left child
+        //it.p->pRight->pLeft = it.p->pLeft;
 
         delete it.p;
-        return iterator(temp);
+        return;
     }
-
-    /**********************************************
-     * BST : FIND
-     * Determines if a value is found within our
-     * BST, if it is not found, return the end
-     * iterator
-     **********************************************/
-    template <class T>
-    typename BST<T>::iterator BST<T>::find(const T &t)
+    // if its the root and has NO grandchildren
+    else if (!it.p->pParent && it.p->pLeft && !it.p->pLeft->pLeft && !it.p->pLeft->pRight
+        && it.p->pRight && !it.p->pRight->pLeft && !it.p->pRight->pRight)
     {
-        // find the node equal to our parameter in our BST
-        if (front == NULL || front->pNext == NULL && front->data == t)
-            return front;
+        //point the left node to the right node as parent
+        it.p->pLeft->pParent = it.p->pRight;
+        //point the right node to the parent of it
+        it.p->pRight->pParent = NULL;
+        //point the right to the left as a left child
+        it.p->pRight->pLeft = it.p->pLeft;
+        root = it.p->pRight;
+        delete it.p;
+        return;
+    }
+    // if its not the root and has grandchildren the left but not on the right
+    else if (it.p->pParent && it.p->pLeft && it.p->pRight
+        && (it.p->pLeft->pLeft || it.p->pLeft->pRight)
+        && !it.p->pRight->pLeft)
+    {
+        //point the parent to the the new node
+        it.p->pLeft->pParent = it.p->pRight;
+        //point the parent of it the right node either to the left or right of it
+        if (it.p->pParent->pLeft == it.p)
+            it.p->pParent->pLeft = it.p->pRight;
         else
-        {
-            for (typename BST<T>::BNode *data = front; data != NULL; data = data->pNext)
-            {
-                //searches if the data is in the BST
-                if (data->data == t)
-                {
-                    //if value is found
-                    return data;
-                }
-            }
-        }
-        return NULL;
+            it.p->pParent->pRight = it.p->pRight;
+        //point new node to its realtives
+        it.p->pRight->pLeft = it.p->pLeft;
+        it.p->pRight->pParent = it.p->pParent;
+        delete it.p;
+        return;
     }
-
-    /********************************************
-     * BST :: Clear
-     * Empty our BST and reBST the size and
-     * capacity
-     ********************************************/
-    template <class T>
-    void BST<T>::clear()
+    // if its not the root and has grandchildren on the right but not on the left
+    else if (it.p->pParent && it.p->pRight && it.p->pLeft
+        && (it.p->pRight->pLeft || it.p->pRight->pRight)
+        && !it.p->pLeft->pRight)
     {
-        while (pHead != NULL)
-        {
-            typename BST<T>::BNode *pDelete = pHead;
-            pHead = pHead->pNext;
-            delete pDelete;
-        }
-
-        numElements = 0;
-        pHead = NULL;
-        pTail = NULL;
-    };
-
-    /*******************************************
-     * BST :: Assignment operator
-     * Copies the data from one object to the
-     * other
-     *******************************************/
-    template <class T>
-    BST<T> &BST<T>::operator=(BST<T> &rhs)
-    {
-        if (rhs.pHead != NULL)
-        {
-            if (pHead != NULL)
-                clear();
-            else
-                throw "ERROR: Unable to allocate buffer a new buffer for set";
-
-            for (BST<T>::iterator it = rhs.begin(); it != rhs.end(); ++it)
-                push_back(*it);
-        }
-        return *this;
+        //point the parent to the the new node
+        it.p->pRight->pParent = it.p->pLeft;
+        //point the parent of it the right node either to the left or right of it
+        if (it.p->pParent->pLeft == it.p)
+            it.p->pParent->pLeft = it.p->pLeft;
+        else
+            it.p->pParent->pRight = it.p->pLeft;
+        //point new node to its realtives
+        it.p->pLeft->pRight = it.p->pRight;
+        it.p->pLeft->pParent = it.p->pParent;
+        delete it.p;
+        return;
     }
+}
 
-    /*******************************************
-     * BST :: COPY CONSTRUCTOR
-     * Copies all of the data using the assignment
-     * operator
-     *******************************************/
-    template <class T>
-    BST<T>::BST(BST<T> &rhs)
+template <class T>
+typename BST<T>::iterator BST<T>::find(T t)
+{
+    for (iterator it = begin(); it != end(); ++it)
+        if (*it == t)
+            return it;
+    return end();
+}
+
+
+template <class T>
+typename BST<T>::iterator BST<T>::begin()
+{
+    BNode* x = root;
+    if (x)
     {
-        pHead = NULL;
-        pTail = NULL;
-        numElements = 0;
-        int x = 0;
-
-        if (rhs.pHead != NULL)
+        while (x->pLeft != NULL)
         {
-            if (pHead != NULL)
-                clear();
-
-            for (BST<T>::iterator it = rhs.begin(); it != rhs.end(); ++it)
-                push_back(*it);
+            x = x->pLeft;
         }
     }
+   return iterator(x);
+}
 
-    /********************************************
-    * BST :: INSERT
-    * Inserts the passed in value into our BST
-    * at a specified index
-    ********************************************/
-    template <class T>
-    typename BST<T>::iterator BST<T>::insert(const T &t)
+template <class T>
+typename BST<T>::iterator BST<T>::end()
+{
+   return iterator(NULL);
+}
+
+template <class T>
+typename BST<T>::iterator BST<T>::Rbegin()
+{
+    BNode* x = root;
+    if (x)
     {
-        //if they insert a null pointer add to the end
-        if (it == NULL)
+        while (x->pRight != NULL)
         {
-            typename BST<T>::BNode *pNew = new BNode(t);
-            pNew->pPrev = pTail;
-            pNew->pNext = NULL;
-
-            //point tail to pNew
-            pTail->pNext = pNew;
-            numElements++;
-            pTail = pNew;
-
-            return iterator(pNew);
+            x = x->pRight;
         }
+    }
+    return iterator(x);
+}
 
-        //create new node
-        typename BST<T>::BNode *pNew = new BNode(t);
+template <class T>
+typename BST<T>::iterator BST<T>::Rend()
+{
+    return iterator(NULL);
+}
 
-        if (pHead == NULL && pTail == NULL)
-        {
-            pHead = pNew;
-            pTail = pNew;
-            numElements++;
+template <class T>
+void BST<T>::deleteNode(BNode* del, bool right)
+{
+    iterator it = find(del);
+    erase(it);
+}
 
-            return iterator(pNew);
-        }
+template <class T>
+void BST<T>::deleteBinaryTree(BNode* del)
+{
+    if (del == NULL)
+        return;
+    else {
+        deleteBinaryTree(del->pLeft);
+        deleteBinaryTree(del->pRight);
+        delete del;
+        del = NULL;
+    }
+}
 
-        //point new node to prev and next nodes
-        pNew->pNext = it.p;
-        pNew->pPrev = it.p->pPrev;
+template <class T>
+void BST<T>::copyBinaryTree(BNode* src, BNode* &dest)
+{
+    if (src == NULL)
+        return;
 
-        //point prev and next nodes to the new node
-        it.p->pPrev = pNew;
+    dest = new BNode(src->data);
 
-        if (pNew->pPrev != NULL)
-            pNew->pPrev->pNext = pNew;
+    // copy over pointer to left node
+   copyBinaryTree(src->pLeft, dest->pLeft);
 
-        //special cases front and back of the BST
-        if (pNew->pPrev == NULL)
-            pHead = pNew;
-        else if (pNew->pNext == NULL)
-            pTail = pNew;
+    if (dest->pLeft != NULL)
+        dest->pLeft->pParent = dest;
 
-        numElements++;
+    copyBinaryTree(src->pRight, dest->pRight);
 
-        return iterator(pNew);
-    };
-};     // namespace custom
-#endif // BST_H
+    if (dest->pRight != NULL)
+        dest->pRight->pParent = dest;
+    return;
+}
+
+/**************************************************
+ * BST :: sizeRecursive
+ * RETURN: size of the BST
+ *************************************************/
+template <class T>
+int BST<T>::sizeRecursive(BNode* rec)
+{
+    if (!rec)
+        return 0;
+    else
+        return sizeRecursive(rec->pLeft) + 1 + sizeRecursive(rec->pRight);
+}
+template <class T>
+typename BST<T>::BNode* BST<T>::getRoot()
+{
+   return root;
+}
+
+}
+#endif /* bst_h */
