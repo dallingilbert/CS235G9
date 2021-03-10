@@ -17,6 +17,7 @@
         "iomanip": "cpp",
         "iterator": "cpp",
         "xlocmon": "cpp",
-        "xlocnum": "cpp"
+        "xlocnum": "cpp",
+        "cassert": "cpp"
     }
 }
