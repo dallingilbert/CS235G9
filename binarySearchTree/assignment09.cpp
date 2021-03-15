@@ -32,7 +32,7 @@ void testBalance();
 #define TEST2   // for testAdd()
 #define TEST3   // for testIterate()
 #define TEST4   // for testDelete()
-//#define TESTA   // for testBalance()
+#define TESTA   // for testBalance()
 
 /**********************************************************************
  * MAIN
@@ -508,6 +508,7 @@ void testBalance()
 
         // make sure it all works as we expect
         cout << "Final tree: " << tree << endl;
+        cout << "Test Balance complete\n";
     }
     catch (const char* error)
     {
@@ -515,5 +516,3 @@ void testBalance()
     }
 }
 #endif // TESTA
-cout << "Test Balance complete\n";
-}
