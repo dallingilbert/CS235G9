@@ -21,6 +21,21 @@
 template <class T>
 void sortBinary(T array[], int num)
 {
+    // initialize variables
+    int i = 0;
+    custom::BST<T> *bst = new custom::BST<T>();
+
+    for (i = 0; i <= num - 1; i++)
+    {
+        bst->insert(array[i]);
+    }
+
+    // reset i
+    i = 0;
+    for (typename custom::BST<T>::iterator it = bst->begin(); it != bst->end(); ++it)
+    {
+        array[i++] = *it;
+    }
 }
 
 
