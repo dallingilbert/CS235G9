@@ -18,6 +18,24 @@
 template <class T>
 void sortSelection(T array[], int num)
 {
+    for (int iPivot = num - 1; iPivot >= 1; --iPivot)
+    {
+        int iLargest = 0;
+        for (int iCheck = 0; iCheck < iPivot; iCheck++)
+        {
+            if (array[iLargest] < array[iCheck])
+                // update iLargest
+                iLargest = iCheck;
+
+        }
+        if (array[iLargest] > array[iPivot])
+        {
+            // swap variables
+            T tempVar = array[iLargest];
+            array[iLargest] = array[iPivot];
+            array[iPivot] = tempVar;
+        }
+    }
 }
 
 
