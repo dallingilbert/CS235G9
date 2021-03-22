@@ -18,6 +18,10 @@
         "iterator": "cpp",
         "xlocmon": "cpp",
         "xlocnum": "cpp",
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "array": "cpp",
+        "initializer_list": "cpp",
+        "type_traits": "cpp",
+        "vector": "cpp"
     }
 }
