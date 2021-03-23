@@ -24,884 +24,884 @@ using namespace std;
 typedef int myInt;
 typedef float myFloat;
 
-namespace custom
+template <class T>
+class Hash
 {
-    template <class T>
-    class Hash
+private:
+    T *table;
+    int numElements;
+    int numBuckets;
+
+public:
+    // nested class
+    class list;
+
+    // non-default constructor
+    Hash(int numBuckets)
     {
-        private:
-        T *table;
-        int numElements;
-        int numBuckets;
+        table = new list[numBuckets];
+        numElements = 0;
+        this->numBuckets = numBuckets;
+    }
 
-        public:
-        // nested class
-        class list;
+    // copy constructor
+    Hash(const Hash &rhs)
+    {
+        table = rhs.table;
+        numElements = rhs.numElements;
+        numBuckets = rhs.numBuckets;
+    }
 
-        // non-default constructor
-        Hash(int numBuckets)
-        {
-            table = new list[numBuckets];
-            numElements = 0;
-            this->numBuckets = numBuckets;
-        }
+    // destructor
+    ~Hash()
+    {
+        delete Hash;
+    }
 
-        // copy constructor
-        Hash(const Hash& rhs)
-        {
-            table = rhs.table;
-            numElements = rhs.numElements;
-            numBuckets = rhs.numBuckets;
-        }
+    // assignment
+    Hash &operator=(Hash<T> &rhs)
+    {
+        table = rhs.table;
+        numElements = rhs.numElements;
+        numBuckets = rhs.numBuckets;
 
-        // destructor
-        ~Hash()
-        {
-            delete Hash;
-        }
+        return *this;
+    }
 
-        // assignment
-        Hash& operator=(Hash<T> &rhs)
-        {
-            table = rhs.table;
-            numElements = rhs.numElements;
-            numBuckets = rhs.numBuckets;
+    // member methods
+    int size() const;
+    int capacity() const;
+    bool empty();
+    void clear();
+    bool find(const T &t);
+    void insert(const T &t);
+    virtual int hash(const T &t) = 0;
 
-            return *this;
-        }
+}; // Hash
 
-        // member methods
-        int size();
-        int capacity();
-        bool empty();
-        void clear();
-        bool find(const T& t);
-        void insert(const T& t);
-        virtual int hash(const T& t) = 0;
-
-
-    }; // Hash
-
-        /************************************************
+/************************************************
         * HASH SIZE
         * Return the number of elements in a specified 
         * hash
         ***********************************************/
-        template <class T>
-        int Hash<T>::size()
-        {
-            return numElements;
-        }
+template <class T>
+int Hash<T>::size() const
+{
+    return numElements;
+}
 
-        /************************************************
+/************************************************
         * HASH CAPACITY
         * Return the number of buckets in a specified 
         * hash
         ***********************************************/
-        template <class T>
-        int Hash<T>::capacity()
-        {
-            return numBuckets;
-        }
+template <class T>
+int Hash<T>::capacity() const
+{
+    return numBuckets;
+}
 
-        /************************************************
+/************************************************
         * HASH EMPTY
         * Return true or false depending on the state of 
         * our hash table
         ***********************************************/
-        template <class T>
-        bool Hash<T>::empty()
-        {
-            if (numElements == 0)
-            { 
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+template <class T>
+bool Hash<T>::empty()
+{
+    if (numElements == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
-        /************************************************
+/************************************************
         * HASH FIND
         * Finds a value within our hash table and returns
         * true if it is found, false otherwise
         ***********************************************/
-        // template <class T>
-        // bool Hash<T>::find(const T& t)
-        // {
-        //     int i = hash(t);
-        //     return table[i].find(i);
-        // }
+template <class T>
+bool Hash<T>::find(const T& t)
+{
+    int i = hash(t);
+    return table[i].find(i);
+}
 
-        /************************************************
+/************************************************
         * HASH INSERT
         * Inserts a value within our hash table
         ***********************************************/
-        template <class T>
-        void Hash<T>::insert(const T& t)
-        {
-            int i = hash(t);
-            table[i].insert(i);
-        }
+template <class T>
+void Hash<T>::insert(const T &t)
+{
+    int i = hash(t);
+    table[i].insert(i);
+}
 
-        template <class T>
-        virtual Hash<T>::hash(const T& t) = 0
-        {
+template <class T>
+virtual int Hash<T>::hash(const T &t) const = 0
+{
+    
+}
 
-        }
-
-
-    /************************************************
+/************************************************
     * list
     * A class that holds stuff
     ***********************************************/
-    template <typename  T>
-    class list
+template <typename T>
+class list
+{
+private:
+    class Node
     {
-    private:
-        class Node {
-        public:
-            T data;
-            Node* pNext;
-            Node* pPrev;
-
-            // default constructor
-            Node()
-            {
-                this->data = NULL;
-                this->pNext = NULL;
-                this->pPrev = NULL;
-            }
-
-            // non-default constructor
-            Node(const T& t)
-            {
-                this->data = t;
-                this->pNext = NULL;
-                this->pPrev = NULL;
-            }
-        };
-        Node* pHead;
-        Node* pTail;
-        int numElements;
     public:
-        // default constructor and non-default constructors
-        list()
-        {
-            pHead = NULL;
-            pTail = NULL;
-            numElements = 0;
-        }
-        list(list<T>& rhs);
+        T data;
+        Node *pNext;
+        Node *pPrev;
 
-        // destructor
-        ~list()
+        // default constructor
+        Node()
         {
-            if (pHead != NULL)
-            {
-                Node* pDelete = pHead;
-                pHead = pHead->pNext;
-                delete pDelete;
-            }
+            this->data = NULL;
+            this->pNext = NULL;
+            this->pPrev = NULL;
         }
 
-        // overloaded operators
-        list& operator=(list<T>& rhs);
-
-        // getters
-        int size() const { return numElements; }
-
-        // public member methods
-        bool empty() const { return size() == 0; }
-        void clear();
-        T& front();
-        const T& front() const;
-        T& back();
-        const T& back() const;
-
-        // push methods
-        void push_back(T t);
-        void push_front(T t);
-
-        // pop methods
-        void pop_back();
-        void pop_front();
-
-        // the various iterator interfaces
-        class iterator;
-        iterator find(const T& t);
-        iterator erase(const iterator& it);
-        iterator insert(const iterator& it, const T& t);
-        iterator begin();
-        iterator end();
-
-        class const_iterator;
-        const_iterator Cbegin();
-        const_iterator Cend();
-
-        class reverse_iterator;
-        reverse_iterator Rbegin();
-        reverse_iterator Rend();
-
-        class const_reverse_iterator;
-        const_reverse_iterator CRbegin();
-        const_reverse_iterator CRend();
+        // non-default constructor
+        Node(const T &t)
+        {
+            this->data = t;
+            this->pNext = NULL;
+            this->pPrev = NULL;
+        }
     };
+    Node *pHead;
+    Node *pTail;
+    int numElements;
 
-    /**************************************************
+public:
+    // default constructor and non-default constructors
+    list()
+    {
+        pHead = NULL;
+        pTail = NULL;
+        numElements = 0;
+    }
+    list(list<T> &rhs);
+
+    // destructor
+    ~list()
+    {
+        if (pHead != NULL)
+        {
+            Node *pDelete = pHead;
+            pHead = pHead->pNext;
+            delete pDelete;
+        }
+    }
+
+    // overloaded operators
+    list &operator=(list<T> &rhs);
+
+    // getters
+    int size() const { return numElements; }
+
+    // public member methods
+    bool empty() const { return size() == 0; }
+    void clear();
+    T &front();
+    const T &front() const;
+    T &back();
+    const T &back() const;
+
+    // push methods
+    void push_back(T t);
+    void push_front(T t);
+
+    // pop methods
+    void pop_back();
+    void pop_front();
+
+    // the various iterator interfaces
+    class iterator;
+    iterator find(const T &t);
+    iterator erase(const iterator &it);
+    iterator insert(const iterator &it, const T &t);
+    iterator begin();
+    iterator end();
+
+    class const_iterator;
+    const_iterator Cbegin();
+    const_iterator Cend();
+
+    class reverse_iterator;
+    reverse_iterator Rbegin();
+    reverse_iterator Rend();
+
+    class const_reverse_iterator;
+    const_reverse_iterator CRbegin();
+    const_reverse_iterator CRend();
+};
+
+/**************************************************
     * list :: ITERATOR
     * An iterator through a list
     *************************************************/
-    template <class T>
-    class list<T>::iterator
+template <class T>
+class list<T>::iterator
+{
+private:
+    typename list<T>::Node *p;
+
+public:
+    // constructors, destructors, and assignment operator
+    iterator() : p(NULL) {}
+    iterator(typename list<T>::Node *temp) : p(temp) {} //: data(*data) {}
+    iterator(const iterator &rhs) { *this = rhs; }
+    iterator &operator=(const iterator &rhs)
     {
-    private:
-        typename list<T>::Node* p;
-    public:
-        // constructors, destructors, and assignment operator
-        iterator() : p(NULL) {}
-        iterator(typename list<T>::Node* temp) : p(temp) {}//: data(*data) {}
-        iterator(const iterator& rhs) { *this = rhs; }
-        iterator& operator=(const iterator& rhs)
-        {
-            this->p = rhs.p;
-            return *this;
-        }
+        this->p = rhs.p;
+        return *this;
+    }
 
-        friend iterator list<T>::insert(const iterator& it, const T& t);
-        friend iterator list<T>::erase(const iterator& it);
-        // equals, not equals operator
-        bool operator!=(const iterator& rhs) const { return rhs.p != this->p; }
-        bool operator==(const iterator& rhs) const { return rhs.p == this->p; }
+    friend iterator list<T>::insert(const iterator &it, const T &t);
+    friend iterator list<T>::erase(const iterator &it);
+    // equals, not equals operator
+    bool operator!=(const iterator &rhs) const { return rhs.p != this->p; }
+    bool operator==(const iterator &rhs) const { return rhs.p == this->p; }
 
-        // dereference operator
-        T& operator*() { return p->data; }
-        const T& operator*() const { return p->data; }
+    // dereference operator
+    T &operator*() { return p->data; }
+    const T &operator*() const { return p->data; }
 
-        // prefix increment
-        iterator& operator++()
-        {
-            if (p)
-                p = p->pNext;
-            return *this;
-        }
+    // prefix increment
+    iterator &operator++()
+    {
+        if (p)
+            p = p->pNext;
+        return *this;
+    }
 
-        // postfix increment
-        iterator operator++(int postfix)
-        {
-            iterator tmp(p);
-            if (p)
-                p = p->pNext;
-            return tmp;
-        }
-        // prefix increment
-        iterator& operator--()
-        {
-            p = p->pPrev;
-            iterator tmp(p);
-            return tmp;
-        }
+    // postfix increment
+    iterator operator++(int postfix)
+    {
+        iterator tmp(p);
+        if (p)
+            p = p->pNext;
+        return tmp;
+    }
+    // prefix increment
+    iterator &operator--()
+    {
+        p = p->pPrev;
+        iterator tmp(p);
+        return tmp;
+    }
 
-        // postfix increment
-        iterator operator--(int prefix)
-        {
-            iterator tmp(p);
-            tmp = tmp.p->pPrev;
-            return tmp;
-        }
-    };
+    // postfix increment
+    iterator operator--(int prefix)
+    {
+        iterator tmp(p);
+        tmp = tmp.p->pPrev;
+        return tmp;
+    }
+};
 
-    /**************************************************
+/**************************************************
     * list :: const_iterator
     * An iterator through a list
     *************************************************/
-    template <class T>
-    class list<T>::const_iterator
+template <class T>
+class list<T>::const_iterator
+{
+private:
+    typename list<T>::Node *p;
+
+public:
+    // constructors, destructors, and assignment operator
+    const_iterator() : p(NULL) {}
+    const_iterator(typename list<T>::Node *temp) : p(temp) {} //: data(*data) {}
+    const_iterator(const iterator &rhs) { *this = rhs; }
+    const_iterator &operator=(const iterator &rhs)
     {
-    private:
-        typename list<T>::Node* p;
-    public:
-        // constructors, destructors, and assignment operator
-        const_iterator() : p(NULL) {}
-        const_iterator(typename list<T>::Node* temp) : p(temp) {}//: data(*data) {}
-        const_iterator(const iterator& rhs) { *this = rhs; }
-        const_iterator& operator=(const iterator& rhs)
-        {
-            this->p = rhs.p;
-            return *this;
-        }
+        this->p = rhs.p;
+        return *this;
+    }
 
-        friend const_iterator list<T>::insert(const const_iterator& it, const T& t);
-        friend const_iterator list<T>::erase(const const_iterator& it);
-        // equals, not equals operator
-        bool  operator!=(const const_iterator & rhs) const { return rhs.p != this->p; }
-        bool operator ==(const const_iterator & rhs) const { return rhs.p == this->p; }
+    friend const_iterator list<T>::insert(const const_iterator &it, const T &t);
+    friend const_iterator list<T>::erase(const const_iterator &it);
+    // equals, not equals operator
+    bool operator!=(const const_iterator &rhs) const { return rhs.p != this->p; }
+    bool operator==(const const_iterator &rhs) const { return rhs.p == this->p; }
 
-        // dereference operator
-        const T& operator*() { return p->data; }
-        const T& operator*() const { return p->data; }
+    // dereference operator
+    const T &operator*() { return p->data; }
+    const T &operator*() const { return p->data; }
 
-        // prefix increment
-        const_iterator& operator++()
-        {
-            if (p)
-                p = p->pNext;
-            return *this;
-        }
+    // prefix increment
+    const_iterator &operator++()
+    {
+        if (p)
+            p = p->pNext;
+        return *this;
+    }
 
-        // postfix increment
-        const_iterator operator++(int postfix)
-        {
-            const_iterator tmp(*this);
-            if (p)
-                p = p->pNext;
-            return tmp;
-        }
-        // prefix increment
-        const_iterator& operator--()
-        {
-            p = p->pPrev;
-            const_iterator tmp(p);
-            return tmp;
-        }
+    // postfix increment
+    const_iterator operator++(int postfix)
+    {
+        const_iterator tmp(*this);
+        if (p)
+            p = p->pNext;
+        return tmp;
+    }
+    // prefix increment
+    const_iterator &operator--()
+    {
+        p = p->pPrev;
+        const_iterator tmp(p);
+        return tmp;
+    }
 
-        // postfix increment
-        const_iterator operator--(int prefix)
-        {
-            const_iterator tmp(*this);
-            tmp = tmp.p->pPrev;
-            return tmp;
-        }
-    };
+    // postfix increment
+    const_iterator operator--(int prefix)
+    {
+        const_iterator tmp(*this);
+        tmp = tmp.p->pPrev;
+        return tmp;
+    }
+};
 
-    /**************************************************
+/**************************************************
     * list :: reverse_iterator
     * An iterator through array
     *************************************************/
-    template <class T>
-    class list<T>::reverse_iterator
+template <class T>
+class list<T>::reverse_iterator
+{
+private:
+    typename list<T>::Node *p;
+
+public:
+    // constructors, destructors, and assignment operator
+    reverse_iterator() : p(NULL) {}
+    reverse_iterator(typename list<T>::Node *temp) : p(temp) {}
+    reverse_iterator(const reverse_iterator &rhs) { *this = rhs; }
+    reverse_iterator &operator=(const reverse_iterator &rhs)
     {
-    private:
-        typename list<T>::Node* p;
-    public:
-        // constructors, destructors, and assignment operator
-        reverse_iterator() : p(NULL) {}
-        reverse_iterator(typename list<T>::Node* temp) : p(temp) {}
-        reverse_iterator(const reverse_iterator& rhs) { *this = rhs; }
-        reverse_iterator& operator=(const reverse_iterator& rhs)
-        {
-            this->p = rhs.p;
-            return *this;
-        }
+        this->p = rhs.p;
+        return *this;
+    }
 
-        // equals, not equals operator
-        bool operator!=(const reverse_iterator& rhs) const { return rhs.p != this->p; }
-        bool operator==(const reverse_iterator& rhs) const { return rhs.p == this->p; }
+    // equals, not equals operator
+    bool operator!=(const reverse_iterator &rhs) const { return rhs.p != this->p; }
+    bool operator==(const reverse_iterator &rhs) const { return rhs.p == this->p; }
 
-        // dereference operator
-        T& operator*() { return p->data; }
-        const T& operator*() const { return p->data; }
+    // dereference operator
+    T &operator*() { return p->data; }
+    const T &operator*() const { return p->data; }
 
-        // prefix increment
-        reverse_iterator& operator++()
-        {
-            if (p)
-                p = p->pPrev;
-            return *this;
-        }
+    // prefix increment
+    reverse_iterator &operator++()
+    {
+        if (p)
+            p = p->pPrev;
+        return *this;
+    }
 
-        // postfix increment
-        reverse_iterator operator++(int postfix)
-        {
-            reverse_iterator tmp(*this);
-            if (p)
-                p = p->pPrev;
-            return tmp;
-        }
-        // prefix increment
-        reverse_iterator& operator--()
-        {
-            p = p->pNext;
-            reverse_iterator tmp(p);
-            return tmp;
-        }
+    // postfix increment
+    reverse_iterator operator++(int postfix)
+    {
+        reverse_iterator tmp(*this);
+        if (p)
+            p = p->pPrev;
+        return tmp;
+    }
+    // prefix increment
+    reverse_iterator &operator--()
+    {
+        p = p->pNext;
+        reverse_iterator tmp(p);
+        return tmp;
+    }
 
-        // postfix increment
-        reverse_iterator operator--(int prefix)
-        {
-            p = p->pNext;
-            reverse_iterator tmp(*this);
-            return tmp;
-        }
-    };
+    // postfix increment
+    reverse_iterator operator--(int prefix)
+    {
+        p = p->pNext;
+        reverse_iterator tmp(*this);
+        return tmp;
+    }
+};
 
-    /**************************************************
+/**************************************************
     * list :: const_reverse_iterator
     * An iterator through array
     *************************************************/
-    template <class T>
-    class list<T>::const_reverse_iterator
+template <class T>
+class list<T>::const_reverse_iterator
+{
+private:
+    typename list<T>::Node *p;
+
+public:
+    // constructors, destructors, and assignment operator
+    const_reverse_iterator() : p(NULL) {}
+    const_reverse_iterator(typename list<T>::Node *temp) : p(temp) {}
+    const_reverse_iterator(const const_reverse_iterator &rhs) { *this = rhs; }
+    const_reverse_iterator &operator=(const const_reverse_iterator &rhs)
     {
-    private:
-        typename list<T>::Node* p;
-    public:
-        // constructors, destructors, and assignment operator
-        const_reverse_iterator() : p(NULL) {}
-        const_reverse_iterator(typename list<T>::Node* temp) : p(temp) {}
-        const_reverse_iterator(const const_reverse_iterator& rhs) { *this = rhs; }
-        const_reverse_iterator& operator=(const const_reverse_iterator& rhs)
-        {
-            this->p = rhs.p;
-            return *this;
-        }
+        this->p = rhs.p;
+        return *this;
+    }
 
-        // equals, not equals operator
-        bool operator!=(const const_reverse_iterator& rhs) const { return rhs.p != this->p; }
-        bool operator==(const const_reverse_iterator& rhs) const { return rhs.p == this->p; }
+    // equals, not equals operator
+    bool operator!=(const const_reverse_iterator &rhs) const { return rhs.p != this->p; }
+    bool operator==(const const_reverse_iterator &rhs) const { return rhs.p == this->p; }
 
-        // dereference operator
-        const T& operator*() { return p->data; }
-        const T& operator*() const { return p->data; }
+    // dereference operator
+    const T &operator*() { return p->data; }
+    const T &operator*() const { return p->data; }
 
-        // prefix increment
-        const_reverse_iterator& operator++()
-        {
-            if (p)
-                p = p->pPrev;
-            return *this;
-        }
+    // prefix increment
+    const_reverse_iterator &operator++()
+    {
+        if (p)
+            p = p->pPrev;
+        return *this;
+    }
 
-        // postfix increment
-        const_reverse_iterator operator++(int postfix)
-        {
-            const_reverse_iterator tmp(*this);
-            if (p)
-                p = p->pPrev;
-            return tmp;
-        }
-        // prefix increment
-        const_reverse_iterator& operator--()
-        {
-            p = p->pNext;
-            const_reverse_iterator tmp(p);
-            return tmp;
-        }
+    // postfix increment
+    const_reverse_iterator operator++(int postfix)
+    {
+        const_reverse_iterator tmp(*this);
+        if (p)
+            p = p->pPrev;
+        return tmp;
+    }
+    // prefix increment
+    const_reverse_iterator &operator--()
+    {
+        p = p->pNext;
+        const_reverse_iterator tmp(p);
+        return tmp;
+    }
 
-        // postfix increment
-        const_reverse_iterator operator--(int prefix)
-        {
-            const_reverse_iterator tmp(*this);
-            tmp = tmp.p->pPrev;
-            return tmp;
-        }
-    };
+    // postfix increment
+    const_reverse_iterator operator--(int prefix)
+    {
+        const_reverse_iterator tmp(*this);
+        tmp = tmp.p->pPrev;
+        return tmp;
+    }
+};
 
-    /********************************************
+/********************************************
     * list :: BEGIN
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
-    template <class T>
-    typename list<T>::iterator list<T>::begin()
-    {
-        return iterator(pHead);
-    }
+template <class T>
+typename list<T>::iterator list<T>::begin()
+{
+    return iterator(pHead);
+}
 
-    /********************************************
+/********************************************
     * list :: END
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
-    template <class T>
-    typename list<T>::iterator list<T>::end()
-    {
-        return iterator(NULL);
-    }
+template <class T>
+typename list<T>::iterator list<T>::end()
+{
+    return iterator(NULL);
+}
 
-    /********************************************
+/********************************************
     * list :: CBEGIN
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
-    template <class T>
-    typename list<T>::const_iterator list<T>::Cbegin()
-    {
-        return const_iterator(pHead);
-    }
+template <class T>
+typename list<T>::const_iterator list<T>::Cbegin()
+{
+    return const_iterator(pHead);
+}
 
-    /********************************************
+/********************************************
     * list :: CEND
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
-    template <class T>
-    typename list<T>::const_iterator list<T>::Cend()
-    {
-        return const_iterator(NULL);
-    }
+template <class T>
+typename list<T>::const_iterator list<T>::Cend()
+{
+    return const_iterator(NULL);
+}
 
-    /********************************************
+/********************************************
     * list :: RBEGIN
     * Returns the beginning of our array
     ********************************************/
-    template <class T>
-    typename list<T>::reverse_iterator  list<T>::Rbegin()
-    {
-        return reverse_iterator(pTail);
-    }
+template <class T>
+typename list<T>::reverse_iterator list<T>::Rbegin()
+{
+    return reverse_iterator(pTail);
+}
 
-    /********************************************
+/********************************************
     * list :: REND
     * Returns the end of our array
     ********************************************/
-    template <class T>
-    typename list<T>::reverse_iterator  list<T>::Rend()
-    {
-        return reverse_iterator(NULL);
-    }
+template <class T>
+typename list<T>::reverse_iterator list<T>::Rend()
+{
+    return reverse_iterator(NULL);
+}
 
-    /********************************************
+/********************************************
     * list :: CRBEGIN
     * Returns the beginning of our array
     ********************************************/
-    template <class T>
-    typename list<T>::const_reverse_iterator  list<T>::CRbegin()
-    {
-        return const_reverse_iterator(pTail);
-    }
+template <class T>
+typename list<T>::const_reverse_iterator list<T>::CRbegin()
+{
+    return const_reverse_iterator(pTail);
+}
 
-    /********************************************
+/********************************************
     * list :: CREND
     * Returns the end of our array
     ********************************************/
-    template <class T>
-    typename list<T>::const_reverse_iterator  list<T>::CRend()
-    {
-        return const_reverse_iterator(NULL);
-    }
+template <class T>
+typename list<T>::const_reverse_iterator list<T>::CRend()
+{
+    return const_reverse_iterator(NULL);
+}
 
-    /********************************************
+/********************************************
    * list :: ERASE
    * Note that you have to use "typename" before
    * the return value type
    ********************************************/
-    template <class T>
-    typename list<T> ::iterator list<T>::erase(const iterator& it)
-    {
-        if (it.p == NULL)
-            return iterator(NULL);
-            
-        if (it.p->pPrev != NULL)
-            it.p->pPrev->pNext = it.p->pNext;
-            
-        if (it.p->pNext != NULL)
-            it.p->pNext->pPrev = it.p->pPrev;
-            
-        if (pHead == it.p)
-            pHead = it.p->pNext;
-            
-        if (pTail == it.p)
-            pTail = it.p->pPrev;
-            
-        typename list<T>::Node* temp;
-        
-        if (it.p->pPrev != NULL)
-            temp = it.p->pPrev;
-        else
-            temp = it.p->pNext;
-            
-        delete it.p;
-        return iterator(temp);
-    }
+template <class T>
+typename list<T>::iterator list<T>::erase(const iterator &it)
+{
+    if (it.p == NULL)
+        return iterator(NULL);
 
-    /**********************************************
+    if (it.p->pPrev != NULL)
+        it.p->pPrev->pNext = it.p->pNext;
+
+    if (it.p->pNext != NULL)
+        it.p->pNext->pPrev = it.p->pPrev;
+
+    if (pHead == it.p)
+        pHead = it.p->pNext;
+
+    if (pTail == it.p)
+        pTail = it.p->pPrev;
+
+    typename list<T>::Node *temp;
+
+    if (it.p->pPrev != NULL)
+        temp = it.p->pPrev;
+    else
+        temp = it.p->pNext;
+
+    delete it.p;
+    return iterator(temp);
+}
+
+/**********************************************
      * list : FIND
      * Determines if a value is found within our
      * list, if it is not found, return the end
      * iterator
      **********************************************/
-    template <class T>
-    typename list<T>::iterator list<T>::find(const T& t)
+template <class T>
+typename list<T>::iterator list<T>::find(const T &t)
+{
+    // find the node equal to our parameter in our list
+    if (front == NULL || front->pNext == NULL && front->data == t)
+        return front;
+    else
     {
-        // find the node equal to our parameter in our list
-        if (front == NULL || front->pNext == NULL && front->data == t)
-            return front;
-        else
+        for (typename list<T>::Node *data = front; data != NULL; data = data->pNext)
         {
-            for (typename list<T>::Node* data = front; data != NULL; data = data->pNext)
+            //searches if the data is in the list
+            if (data->data == t)
             {
-                //searches if the data is in the list
-                if (data->data == t)
-                {
-                    //if value is found
-                    return data;
-                }
+                //if value is found
+                return data;
             }
         }
-        return NULL;
     }
+    return NULL;
+}
 
-    /********************************************
+/********************************************
      * list :: Clear
      * Empty our list and relist the size and
      * capacity
      ********************************************/
-    template <class T>
-    void list<T>::clear()
+template <class T>
+void list<T>::clear()
+{
+    while (pHead != NULL)
     {
-        while (pHead != NULL)
-        {
-            typename list<T>::Node* pDelete = pHead;
-            pHead = pHead->pNext;
-            delete pDelete;
-        }
-        
-        numElements = 0;
-        pHead = NULL;
-        pTail = NULL;
-    };
+        typename list<T>::Node *pDelete = pHead;
+        pHead = pHead->pNext;
+        delete pDelete;
+    }
 
-    /********************************************
+    numElements = 0;
+    pHead = NULL;
+    pTail = NULL;
+};
+
+/********************************************
     * list :: Push Back
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
-    template <class T>
-    void list <T> ::push_back(T t)
+template <class T>
+void list<T>::push_back(T t)
+{
+    typename list<T>::Node *pNew = new Node(t);
+    numElements++;
+
+    if (pTail != NULL)
     {
-        typename list<T>::Node* pNew = new Node(t);
-        numElements++;
-        
-        if (pTail != NULL)
-        {
-            pNew->pNext = NULL;
-            pNew->pPrev = pTail;
-            pTail->pNext = pNew;
-            pTail = pNew;
-        }
+        pNew->pNext = NULL;
+        pNew->pPrev = pTail;
+        pTail->pNext = pNew;
+        pTail = pNew;
+    }
 
-        if (pTail == NULL)
-        {
-            pTail = pNew;
-            pHead = pNew;
-        }
-    };
+    if (pTail == NULL)
+    {
+        pTail = pNew;
+        pHead = pNew;
+    }
+};
 
-    /********************************************
+/********************************************
     * list :: Push Front
     * Note that you have to use "typename" before
     * the return value type
     ********************************************/
-    template <class T>
-    void list <T> ::push_front(T t)
+template <class T>
+void list<T>::push_front(T t)
+{
+    typename list<T>::Node *pNew = new Node(t);
+    numElements++;
+    if (pHead != NULL)
     {
-        typename list<T>::Node* pNew = new Node(t);
-        numElements++;
-        if (pHead != NULL)
-        {
-            pNew->pNext = pHead;
-            pNew->pPrev = pHead->pPrev;
-            pHead->pPrev = pNew;
-            pHead = pNew;
-        }
-        if (pHead == NULL)
-        {
-            pTail = pNew;
-            pHead = pNew;
-        }
-    };
+        pNew->pNext = pHead;
+        pNew->pPrev = pHead->pPrev;
+        pHead->pPrev = pNew;
+        pHead = pNew;
+    }
+    if (pHead == NULL)
+    {
+        pTail = pNew;
+        pHead = pNew;
+    }
+};
 
-    /********************************************
+/********************************************
      * list :: Pop Back
      * Note that you have to use "typename" before
      * the return value type
      ********************************************/
-    template <class T>
-    void list <T> ::pop_back()
+template <class T>
+void list<T>::pop_back()
+{
+    if (pTail != NULL)
     {
-        if (pTail != NULL)
-        {
-            typename list<T>::Node* tmp = pTail->pPrev;
-            pTail->pPrev->pNext = NULL;
-            pTail = tmp;
-            numElements--;
-        }
-    };
+        typename list<T>::Node *tmp = pTail->pPrev;
+        pTail->pPrev->pNext = NULL;
+        pTail = tmp;
+        numElements--;
+    }
+};
 
-    /********************************************
+/********************************************
      * list :: Pop Front
      * Note that you have to use "typename" before
      * the return value type
      ********************************************/
-    template <class T>
-    void list <T> ::pop_front()
+template <class T>
+void list<T>::pop_front()
+{
+    if (pHead != NULL)
     {
-        if (pHead != NULL)
-        {
-            typename list<T>::Node* tmp = pHead->pPrev;
-            pHead->pPrev->pNext = NULL;
-            pHead = tmp;
-            numElements--;
-        }
-    };
+        typename list<T>::Node *tmp = pHead->pPrev;
+        pHead->pPrev->pNext = NULL;
+        pHead = tmp;
+        numElements--;
+    }
+};
 
-    /*******************************************
+/*******************************************
      * list :: Assignment operator
      * Copies the data from one object to the
      * other
      *******************************************/
-    template <class T>
-    list<T>& list<T>::operator=(list<T>& rhs)
+template <class T>
+list<T> &list<T>::operator=(list<T> &rhs)
+{
+    if (rhs.pHead != NULL)
     {
-        if (rhs.pHead != NULL)
-        {
-            if (pHead != NULL)
-                clear();
-            else
-                throw "ERROR: Unable to allocate buffer a new buffer for set";
-                
-            for (list<T>::iterator it = rhs.begin(); it != rhs.end(); ++it)
-                push_back(*it);
-        }
-        return *this;
-    }
+        if (pHead != NULL)
+            clear();
+        else
+            throw "ERROR: Unable to allocate buffer a new buffer for set";
 
-    /*******************************************
+        for (list<T>::iterator it = rhs.begin(); it != rhs.end(); ++it)
+            push_back(*it);
+    }
+    return *this;
+}
+
+/*******************************************
      * list :: COPY CONSTRUCTOR
      * Copies all of the data using the assignment
      * operator
      *******************************************/
-    template <class T>
-    list<T>::list(list<T>& rhs)
-    {
-        pHead = NULL;
-        pTail = NULL;
-        numElements = 0;
-        int x = 0;
-        
-        if (rhs.pHead != NULL)
-        {
-            if (pHead != NULL)
-                clear();
-                
-            for (list<T>::iterator it = rhs.begin(); it != rhs.end(); ++it)
-                push_back(*it);
-        }
-    }
+template <class T>
+list<T>::list(list<T> &rhs)
+{
+    pHead = NULL;
+    pTail = NULL;
+    numElements = 0;
+    int x = 0;
 
-    /********************************************
+    if (rhs.pHead != NULL)
+    {
+        if (pHead != NULL)
+            clear();
+
+        for (list<T>::iterator it = rhs.begin(); it != rhs.end(); ++it)
+            push_back(*it);
+    }
+}
+
+/********************************************
     * list :: INSERT
     * Inserts the passed in value into our list
     * at a specified index
     ********************************************/
-    template <class T>
-    typename list<T> ::iterator list<T>::insert(const list<T>::iterator& it, const T& t)
+template <class T>
+typename list<T>::iterator list<T>::insert(const list<T>::iterator &it, const T &t)
+{
+    //if they insert a null pointer add to the end
+    if (it == NULL)
     {
-        //if they insert a null pointer add to the end
-        if (it == NULL)
-        {
-            typename list<T>::Node* pNew = new Node(t);
-            pNew->pPrev = pTail;
-            pNew->pNext = NULL;
-            
-            //point tail to pNew
-            pTail->pNext = pNew;
-            numElements++;
-            pTail = pNew;
-            
-            return iterator(pNew);
-        }
-        
-        //create new node
-        typename list<T>::Node* pNew = new Node(t);
-        
-        if (pHead == NULL && pTail == NULL)
-        {
-            pHead = pNew;
-            pTail = pNew;
-            numElements++;
-            
-            return iterator(pNew);
-        }
-        
-        //point new node to prev and next nodes
-        pNew->pNext = it.p;
-        pNew->pPrev = it.p->pPrev;
-        
-        //point prev and next nodes to the new node
-        it.p->pPrev = pNew;
-        
-        if (pNew->pPrev != NULL)
-            pNew->pPrev->pNext = pNew;
-            
-        //special cases front and back of the list
-        if (pNew->pPrev == NULL)
-            pHead = pNew;
-        else if (pNew->pNext == NULL)
-            pTail = pNew;
-            
+        typename list<T>::Node *pNew = new Node(t);
+        pNew->pPrev = pTail;
+        pNew->pNext = NULL;
+
+        //point tail to pNew
+        pTail->pNext = pNew;
         numElements++;
-        
+        pTail = pNew;
+
         return iterator(pNew);
-    };
+    }
 
-    /**********************************************
+    //create new node
+    typename list<T>::Node *pNew = new Node(t);
+
+    if (pHead == NULL && pTail == NULL)
+    {
+        pHead = pNew;
+        pTail = pNew;
+        numElements++;
+
+        return iterator(pNew);
+    }
+
+    //point new node to prev and next nodes
+    pNew->pNext = it.p;
+    pNew->pPrev = it.p->pPrev;
+
+    //point prev and next nodes to the new node
+    it.p->pPrev = pNew;
+
+    if (pNew->pPrev != NULL)
+        pNew->pPrev->pNext = pNew;
+
+    //special cases front and back of the list
+    if (pNew->pPrev == NULL)
+        pHead = pNew;
+    else if (pNew->pNext == NULL)
+        pTail = pNew;
+
+    numElements++;
+
+    return iterator(pNew);
+};
+
+/**********************************************
      * list : FRONT
      * Access the oldest value from the list by
      * reference
      **********************************************/
-    template <class T>
-    T& list <T> ::front()
-    {
-        if (empty())
-            throw "ERROR: attempting to access an element in an empty list";
-        else
-            return pHead->data;
-    }
+template <class T>
+T &list<T>::front()
+{
+    if (empty())
+        throw "ERROR: attempting to access an element in an empty list";
+    else
+        return pHead->data;
+}
 
-    /**********************************************
+/**********************************************
      * list : FRONT
      * Access the oldest value from the list by
      * const
      **********************************************/
-    template <class T>
-    const T& list <T> ::front() const
-    {
-        if (empty())
-            throw "ERROR: attempting to access an element in an empty list";
-        else
-            return pHead->data;
-    }
+template <class T>
+const T &list<T>::front() const
+{
+    if (empty())
+        throw "ERROR: attempting to access an element in an empty list";
+    else
+        return pHead->data;
+}
 
-    /**********************************************
+/**********************************************
      * list : BACK
      * Access the oldest value from the list by
      * reference
      **********************************************/
-    template <class T>
-    T& list <T> ::back()
-    {
-        if (empty())
-            throw "ERROR: attempting to access an element in an empty list";
-        else
-            return pTail->data;
-    }
+template <class T>
+T &list<T>::back()
+{
+    if (empty())
+        throw "ERROR: attempting to access an element in an empty list";
+    else
+        return pTail->data;
+}
 
-    /**********************************************
+/**********************************************
      * list : BACK
      * Access the oldest value from the list by
      * const
      **********************************************/
-    template <class T>
-    const T& list <T> ::back() const
-    {
-        if (empty())
-            throw "ERROR: attempting to access an element in an empty list";
-        else
-            return pTail->data;
-    }
-
-} // custom
+template <class T>
+const T &list<T>::back() const
+{
+    if (empty())
+        throw "ERROR: attempting to access an element in an empty list";
+    else
+        return pTail->data;
+}
 
 #endif // HASH_H
