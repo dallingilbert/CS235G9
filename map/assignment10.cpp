@@ -4,7 +4,7 @@
 *    Brother Helfrich, CS 235
 * Author:
 *    Br. Helfrich
-* Summary: 
+* Summary:
 *    This is a driver program to exercise the Map class.  When you
 *    submit your program, this should not be changed in any way.  That being
 *    said, you may need to modify this once or twice to get it to work.
@@ -36,8 +36,8 @@ void testQuery();
 // I suggest first commenting out all of these tests, then try to use only
 // TEST1.  Then, when TEST1 works, try TEST2 and so on.
 #define TEST1   // for testSimple()
-//#define TEST2   // for testAdd()
-//#define TEST3   // for testIterate()
+#define TEST2   // for testAdd()
+#define TEST3   // for testIterate()
 //#define TEST4   // for testQuery()
 
 /**********************************************************************
@@ -129,7 +129,7 @@ void testSimple()
   catch (const char * sError)
   {
      cout << sError << endl;
-  }  
+  }
 #endif //TEST1
 }
 
@@ -178,7 +178,7 @@ void testAdd()
    {
       cout << error << endl;
    }
-#endif // TEST2   
+#endif // TEST2
 }
 
 /*******************************************
@@ -210,7 +210,7 @@ void testIterate()
 {
 #ifdef TEST3
    cout.setf(ios::fixed | ios::showpoint);
-   cout.precision(1);   
+   cout.precision(1);
 
    //
    // An empty map
@@ -239,7 +239,7 @@ void testIterate()
       // fill the tree
       cout << "Create a string-integer map that is filled with: "
            << " f c i b e g j a d h\n";
-      m1[string("f")] = 6; 
+      m1[string("f")] = 6;
       m1[string("c")] = 3;   //               f
       m1[string("i")] = 9;   //          +----+----+
       m1[string("b")] = 2;   //          c         i
@@ -247,7 +247,7 @@ void testIterate()
       m1[string("g")] = 7;   //       b     e   g     j
       m1[string("j")] = 10;  //     +-+   +-+   +-+
       m1[string("a")] = 1;   //     a     d       h
-      m1[string("d")] = 4; 
+      m1[string("d")] = 4;
       m1[string("h")] = 8;
 
       // show the contents of the map
@@ -303,7 +303,7 @@ void testQuery()
          cout << "\t> ";
          cin  >> letter >> word;
       }
-      
+
       // display what was found
       cout << "There are " << m.size() << " items in the map\n";
       cout << "The contents of the map are: " << m << endl;

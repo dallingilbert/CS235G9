@@ -339,8 +339,8 @@ namespace custom
                 pGranny(pNode)->isRed = true;
                 pNode->isRed = false;
             }
-            else if (pNode->pParent && pNode->pParent->pLeft == pNode 
-            && pGranny(pNode) && pGranny(pNode)->pRight == pNode->pParent 
+            else if (pNode->pParent && pNode->pParent->pLeft == pNode
+            && pGranny(pNode) && pGranny(pNode)->pRight == pNode->pParent
             && !pNode->pParent->pRight && pGranny(pNode)->pParent)
             {
                 ///rotate counter-clockwise
@@ -684,7 +684,10 @@ namespace custom
     template <class T>
     int BST<T>::size()
     {
-        return sizeRecursive(root);
+        if (root == NULL)
+            return 0;
+        else
+            return sizeRecursive(root);
     }
 
     /*****************************************************
@@ -777,7 +780,7 @@ namespace custom
                 pNode->addLeft(key, pNode);
         }
         numElements++;
-        pNode->balance(pNode);
+        //pNode->balance(pNode);
     }
 
     /*****************************************************
